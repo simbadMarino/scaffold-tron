@@ -24,11 +24,12 @@
     "tron:deploy:testnet": "tronbox migrate --reset --skip-dry-run --network shasta",
     "tron:deploy:mainnet": "tronbox migrate --reset --skip-dry-run --network mainnet",
     "tron:deploy:nile": "tronbox migrate --reset --skip-dry-run --network nile",
-    "tron:test": "tronbox test",
+    "tron:test": "tronbox test --network shasta",
     "tron:console": "tronbox console",
     "tron:generate": "node scripts/generateTronAccount.js",
     "tron:setup": "node scripts/generateTronAccount.js",
-    "tron:account": "node scripts/listTronAccount.js"
+    "tron:account": "node scripts/listTronAccount.js",
+    "tron:balance": "node scripts/checkTronBalance.js"
   },
   "dependencies": {
     "@inquirer/password": "^4.0.2",

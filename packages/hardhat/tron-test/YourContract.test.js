@@ -1,3 +1,6 @@
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+
 const YourContract = artifacts.require("YourContract");
 
 contract("YourContract", accounts => {
@@ -18,7 +21,10 @@ contract("YourContract", accounts => {
 
     it("has the correct owner", async () => {
       const owner = await yourContract.owner();
-      assert.equal(owner, accounts[0]);
+      // Convert hex address to base58 for comparison
+      const ownerBase58 = tronWeb.address.fromHex(owner);
+      const expectedOwner = tronWeb.address.fromPrivateKey(process.env.TRON_PRIVATE_KEY_SHASTA);
+      assert.equal(ownerBase58, expectedOwner);
     });
 
     it("has the correct initial greeting", async () => {
@@ -39,18 +45,24 @@ contract("YourContract", accounts => {
       const initialCount = await yourContract.totalCounter();
       await yourContract.setGreeting("Test greeting");
       const newCount = await yourContract.totalCounter();
-      assert.equal(newCount.toNumber(), initialCount.toNumber() + 1);
+      // Convert BigNumber to regular number for comparison
+      assert.equal(parseInt(newCount), parseInt(initialCount) + 1);
     });
 
     it("increments the user greeting counter", async () => {
-      const initialCount = await yourContract.userGreetingCounter(accounts[0]);
+      const userAddress = tronWeb.defaultAddress.hex;
+      const initialCount = await yourContract.userGreetingCounter(userAddress);
       await yourContract.setGreeting("Another test greeting");
-      const newCount = await yourContract.userGreetingCounter(accounts[0]);
-      assert.equal(newCount.toNumber(), initialCount.toNumber() + 1);
+      const newCount = await yourContract.userGreetingCounter(userAddress);
+      // Convert BigNumber to regular number for comparison
+      assert.equal(parseInt(newCount), parseInt(initialCount) + 1);
     });
 
     it("sets premium to true when value is sent", async () => {
-      await yourContract.setGreeting("Premium greeting", { value: 1000000 });
+      // Send 1 TRX (1,000,000 SUN) with the transaction
+      await yourContract.setGreeting("Premium greeting", {
+        callValue: 1000000, // 1 TRX in SUN
+      });
       const premium = await yourContract.premium();
       assert.equal(premium, true);
     });

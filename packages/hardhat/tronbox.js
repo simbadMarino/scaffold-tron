@@ -43,6 +43,10 @@ module.exports = {
     },
   },
 
+  // Working directories - make sure paths are relative to project root
+  project_directory: __dirname,
+  working_directory: __dirname,
+
   // Solc compiler configuration
   compilers: {
     solc: {

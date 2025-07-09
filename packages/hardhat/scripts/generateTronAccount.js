@@ -1,4 +1,5 @@
 const TronWeb = require("tronweb");
+const QRCode = require("qrcode");
 const fs = require("fs");
 const path = require("path");
 
@@ -15,11 +16,22 @@ async function generateTronAccount() {
   console.log("✅ New Tron Accounts Generated:");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-  Object.entries(accounts).forEach(([network, account]) => {
+  // Display each account with QR code
+  for (const [network, account] of Object.entries(accounts)) {
     console.log(`\n🌐 ${network.toUpperCase()} Network:`);
-    console.log(`   Address:     ${account.address.base58}`);
-    console.log(`   Private Key: ${account.privateKey}`);
-  });
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+    // Generate QR code for the address
+    try {
+      const qrCode = await QRCode.toString(account.address.base58, { type: "terminal", small: true });
+      console.log(qrCode);
+    } catch (qrError) {
+      console.log("   [QR Code generation failed]");
+    }
+
+    console.log(`📍 Address:     ${account.address.base58}`);
+    console.log(`🔐 Private Key: ${account.privateKey}`);
+  }
 
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
@@ -67,21 +79,24 @@ TRON_PRIVATE_KEY_DEV=da146374a75310b9666e834ee4ad0866d6f4035967bfc76217c5a495fff
   console.log("✅ Updated .env file with new Tron private keys!");
 
   console.log("\n🚰 Next steps - Fund your accounts:");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   console.log(`• Shasta Testnet: https://www.trongrid.io/shasta/`);
-  console.log(`  Address: ${accounts.shasta.address.base58}`);
+  console.log(`  📍 Address: ${accounts.shasta.address.base58}`);
   console.log(`• Nile Testnet: https://nileex.io/join/getJoinPage`);
-  console.log(`  Address: ${accounts.nile.address.base58}`);
+  console.log(`  📍 Address: ${accounts.nile.address.base58}`);
   console.log(`• Mainnet: Purchase TRX and send to ${accounts.mainnet.address.base58}`);
 
   console.log("\n🚀 Ready to deploy:");
-  console.log("• yarn tron:compile");
-  console.log("• yarn tron:deploy:testnet");
+  console.log("• yarn tron:account        - View your accounts");
+  console.log("• yarn tron:compile        - Compile contracts");
+  console.log("• yarn tron:deploy:testnet - Deploy to Shasta testnet");
 
   console.log("\n⚠️  IMPORTANT SECURITY NOTES:");
   console.log("• Your .env file contains private keys - keep it secure!");
   console.log("• Never commit your .env file to version control");
   console.log("• Make sure .env is in your .gitignore file");
   console.log("• These accounts need TRX to deploy contracts");
+  console.log("• Scan the QR codes above to import addresses into your wallet");
 
   return accounts;
 }
