@@ -19,7 +19,16 @@
     "lint": "eslint",
     "lint-staged": "eslint",
     "test": "REPORT_GAS=true hardhat test --network hardhat",
-    "verify": "hardhat etherscan-verify"
+    "verify": "hardhat etherscan-verify",
+    "tron:compile": "tronbox compile",
+    "tron:deploy:testnet": "tronbox migrate --reset --skip-dry-run --network shasta",
+    "tron:deploy:mainnet": "tronbox migrate --reset --skip-dry-run --network mainnet",
+    "tron:deploy:nile": "tronbox migrate --reset --skip-dry-run --network nile",
+    "tron:test": "tronbox test",
+    "tron:console": "tronbox console",
+    "tron:generate": "node scripts/generateTronAccount.js",
+    "tron:setup": "node scripts/generateTronAccount.js",
+    "tron:account": "node scripts/listTronAccount.js"
   },
   "dependencies": {
     "@inquirer/password": "^4.0.2",
@@ -56,6 +65,8 @@
     "prettier": "^3.5.3",
     "prettier-plugin-solidity": "~1.4.1",
     "solidity-coverage": "~0.8.13",
+    "tronbox": "~4.2.0",
+    "tronweb": "~6.0.0",
     "ts-node": "~10.9.1",
     "typechain": "~8.3.2",
     "typescript": "^5.8.2"
