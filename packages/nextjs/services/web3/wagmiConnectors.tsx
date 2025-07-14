@@ -37,7 +37,7 @@ export const wagmiConnectors = connectorsForWallets(
   ],
 
   {
-    appName: "scaffold-tron",
+    appName: "scaffold-eth-2",
     projectId: scaffoldConfig.walletConnectProjectId,
   },
 );
