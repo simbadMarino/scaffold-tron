@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
-import { tronMainnet, tronNile, tronShasta } from "~~/utils/scaffold-eth/networks";
+import { getTargetTronNetwork, tronMainnet, tronNile, tronShasta } from "~~/utils/scaffold-eth/networks";
 
 // Types
 export interface TronNetwork {
@@ -81,7 +81,8 @@ export const useTron = () => {
 export const TronProvider = ({ children }: { children: ReactNode }) => {
   const [tronWeb, setTronWeb] = useState<any>(null);
   const [account, setAccount] = useState<TronAccount | null>(null);
-  const [network, setNetwork] = useState<TronNetwork>(TRON_NETWORKS[tronShasta.id]);
+  // Use the targetTronNetwork from scaffold.config.ts
+  const [network, setNetwork] = useState<TronNetwork>(TRON_NETWORKS[getTargetTronNetwork().id]);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
 

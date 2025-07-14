@@ -3,6 +3,8 @@ import { tronMainnet, tronNile, tronShasta } from "~~/utils/scaffold-eth/network
 
 export type ScaffoldConfig = {
   targetNetworks: readonly chains.Chain[];
+  // Add TRON network configuration
+  targetTronNetwork: typeof tronShasta | typeof tronNile | typeof tronMainnet;
   pollingInterval: number;
   alchemyApiKey: string;
   rpcOverrides?: Record<number, string>;
@@ -15,6 +17,13 @@ export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 const scaffoldConfig = {
   // The networks on which your DApp is live
   targetNetworks: [chains.hardhat],
+
+  // The TRON network for your DApp
+  // Available options:
+  // - tronShasta: Shasta testnet (for development)
+  // - tronNile: Nile testnet (for development)
+  // - tronMainnet: Tron mainnet (for production)
+  targetTronNetwork: tronShasta,
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)

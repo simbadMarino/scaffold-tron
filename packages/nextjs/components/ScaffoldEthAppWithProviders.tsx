@@ -15,7 +15,7 @@ import { TronProvider } from "~~/services/web3/tronConfig";
 import { UnifiedWeb3Provider } from "~~/services/web3/unifiedWeb3Context";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
-const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
+const ScaffoldTronApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
 
   return (
@@ -38,7 +38,7 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
+export const ScaffoldTronAppWithProviders = ({ children }: { children: React.ReactNode }) => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
@@ -49,19 +49,19 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
 
   return (
     <WagmiProvider config={wagmiConfig}>
-      <TronProvider>
-        <UnifiedWeb3Provider>
-          <QueryClientProvider client={queryClient}>
-            <ProgressBar height="3px" color="#2299dd" />
-            <RainbowKitProvider
-              avatar={BlockieAvatar}
-              theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
-            >
-              <ScaffoldEthApp>{children}</ScaffoldEthApp>
-            </RainbowKitProvider>
-          </QueryClientProvider>
-        </UnifiedWeb3Provider>
-      </TronProvider>
+      <QueryClientProvider client={queryClient}>
+        <ProgressBar height="3px" color="#2299dd" />
+        <RainbowKitProvider
+          avatar={BlockieAvatar}
+          theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+        >
+          <TronProvider>
+            <UnifiedWeb3Provider>
+              <ScaffoldTronApp>{children}</ScaffoldTronApp>
+            </UnifiedWeb3Provider>
+          </TronProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
     </WagmiProvider>
   );
 };

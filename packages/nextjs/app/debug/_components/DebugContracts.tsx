@@ -8,7 +8,7 @@ import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { ContractName, GenericContract } from "~~/utils/scaffold-eth/contract";
 import { useActiveNetworkInfo, useUnifiedContracts } from "~~/utils/scaffold-eth/unifiedContractsData";
 
-const selectedContractStorageKey = "scaffoldEth2.selectedContract";
+const selectedContractStorageKey = "scaffoldTron.selectedContract";
 
 export function DebugContracts() {
   const { activeBlockchain, setActiveBlockchain } = useUnifiedWeb3();

@@ -1,11 +1,11 @@
-# 🏗 Scaffold-ETH 2 + Tron Integration
+# 🏗 Scaffold-TRON
 
 <h4 align="center">
   <a href="https://docs.scaffoldeth.io">Documentation</a> |
   <a href="https://scaffoldeth.io">Website</a>
 </h4>
 
-🧪 An enhanced version of Scaffold-ETH 2 with **dual-blockchain support** for both **Ethereum** and **Tron** networks. This toolkit makes it easier for developers to create and deploy smart contracts on both blockchains and build user interfaces that interact with those contracts.
+🧪 A **dual-blockchain development toolkit** built with **Scaffold-ETH 2** for both **Ethereum** and **Tron** networks. This toolkit makes it easier for developers to create and deploy smart contracts on both blockchains and build user interfaces that interact with those contracts.
 
 ⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, TronBox, TronWeb, and Typescript.
 

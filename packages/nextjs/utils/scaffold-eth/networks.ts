@@ -144,6 +144,13 @@ export function getTargetNetworks(): ChainWithAttributes[] {
   }));
 }
 
+/**
+ * Gets the target TRON network from scaffold.config.ts
+ */
+export function getTargetTronNetwork() {
+  return scaffoldConfig.targetTronNetwork;
+}
+
 // Tron Networks
 export const tronShasta = {
   id: 2494104990,
