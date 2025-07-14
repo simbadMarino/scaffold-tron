@@ -1,54 +1,62 @@
 "use client";
 
-import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
+import { useTronReadContract } from "~~/hooks/scaffold-eth/useTronReadContract";
+import { useTron } from "~~/services/web3/tronConfig";
+import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
+  const { activeBlockchain, activeAccount, isConnected } = useUnifiedWeb3();
+  const { network: tronNetwork } = useTron();
+
+  // Ethereum contract reading
+  const { data: ethereumGreeting } = useScaffoldReadContract({
+    contractName: "YourContract",
+    functionName: "greeting",
+  });
+
+  // Tron contract reading
+  const {
+    data: tronGreeting,
+    isLoading: tronLoading,
+    error: tronError,
+  } = useTronReadContract({
+    contractName: "YourContract",
+    functionName: "greeting",
+  });
 
   return (
     <>
-      <div className="flex items-center flex-col grow pt-10">
+      <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center">
             <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
+            <span className="block text-4xl font-bold">Scaffold-ETH 2 + Tron</span>
           </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
+          <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
+            <p className="my-2 font-medium">Connected to:</p>
+            <p className="my-2 font-bold text-lg">
+              {activeBlockchain === "ethereum" ? "Ethereum" : "Tron"}
+              {activeBlockchain === "tron" && ` (${tronNetwork?.name})`}
+            </p>
           </div>
-
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
+          <p className="text-center text-lg">Switch between Ethereum and Tron using the toggle in the header!</p>
         </div>
 
-        <div className="grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col md:flex-row">
+        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
+          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
               <BugAntIcon className="h-8 w-8 fill-secondary" />
               <p>
                 Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
+                <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
+                  debug
+                </code>{" "}
                 tab.
               </p>
             </div>
@@ -56,11 +64,65 @@ const Home: NextPage = () => {
               <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
               <p>
                 Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
+                <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
                   Block Explorer
-                </Link>{" "}
+                </code>{" "}
                 tab.
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Connection Status */}
+        <div className="bg-base-200 w-full mt-8 px-8 py-6">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4 text-center">Connection Status</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Ethereum Status */}
+              <div className="bg-base-100 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-2 flex items-center">
+                  <span className="text-blue-500 mr-2">🔵</span>
+                  Ethereum
+                </h3>
+                {connectedAddress ? (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-2">Connected Address:</p>
+                    <Address address={connectedAddress} />
+                    <p className="text-sm text-gray-600 mt-4 mb-2">Contract Greeting:</p>
+                    <p className="font-mono text-sm bg-base-200 p-2 rounded">{ethereumGreeting || "Loading..."}</p>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">Not connected</p>
+                )}
+              </div>
+
+              {/* Tron Status */}
+              <div className="bg-base-100 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-2 flex items-center">
+                  <span className="text-red-500 mr-2">🔴</span>
+                  Tron
+                </h3>
+                {activeBlockchain === "tron" && isConnected ? (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-2">Connected Address:</p>
+                    <p className="font-mono text-sm bg-base-200 p-2 rounded break-all">{activeAccount}</p>
+                    <p className="text-sm text-gray-600 mt-4 mb-2">Network:</p>
+                    <p className="text-sm">{tronNetwork?.name}</p>
+                    <p className="text-sm text-gray-600 mt-4 mb-2">Contract Greeting:</p>
+                    {tronLoading ? (
+                      <p className="text-sm">Loading...</p>
+                    ) : tronError ? (
+                      <p className="text-sm text-red-500">Error: {tronError}</p>
+                    ) : (
+                      <p className="font-mono text-sm bg-base-200 p-2 rounded">{tronGreeting || "No data"}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">
+                    {activeBlockchain === "tron" ? "Not connected" : "Switch to Tron to see status"}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>

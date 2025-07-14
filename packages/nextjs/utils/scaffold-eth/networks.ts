@@ -143,3 +143,52 @@ export function getTargetNetworks(): ChainWithAttributes[] {
     ...NETWORKS_EXTRA_DATA[targetNetwork.id],
   }));
 }
+
+// Tron Networks
+export const tronShasta = {
+  id: 2494104990,
+  name: "Tron Shasta Testnet",
+  nativeCurrency: { name: "TRX", symbol: "TRX", decimals: 6 },
+  rpcUrls: {
+    default: { http: ["https://api.shasta.trongrid.io"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Shasta Scan",
+      url: "https://shasta.tronscan.org",
+    },
+  },
+  testnet: true,
+} as const;
+
+export const tronNile = {
+  id: 3448148188,
+  name: "Tron Nile Testnet",
+  nativeCurrency: { name: "TRX", symbol: "TRX", decimals: 6 },
+  rpcUrls: {
+    default: { http: ["https://nile.trongrid.io"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Nile Scan",
+      url: "https://nile.tronscan.org",
+    },
+  },
+  testnet: true,
+} as const;
+
+export const tronMainnet = {
+  id: 728126428,
+  name: "Tron Mainnet",
+  nativeCurrency: { name: "TRX", symbol: "TRX", decimals: 6 },
+  rpcUrls: {
+    default: { http: ["https://api.trongrid.io"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "TronScan",
+      url: "https://tronscan.org",
+    },
+  },
+  testnet: false,
+} as const;

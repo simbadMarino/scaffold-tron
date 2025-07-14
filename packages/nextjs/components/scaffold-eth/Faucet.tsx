@@ -25,8 +25,13 @@ export const Faucet = () => {
   const [inputAddress, setInputAddress] = useState<AddressType>();
   const [faucetAddress, setFaucetAddress] = useState<AddressType>();
   const [sendValue, setSendValue] = useState("");
+  const [isClient, setIsClient] = useState(false);
 
   const { chain: ConnectedChain } = useAccount();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const faucetTxn = useTransactor(localWalletClient);
 
@@ -74,8 +79,8 @@ export const Faucet = () => {
     }
   };
 
-  // Render only on local chain
-  if (ConnectedChain?.id !== hardhat.id) {
+  // Render only on local chain and after client-side hydration
+  if (!isClient || ConnectedChain?.id !== hardhat.id) {
     return null;
   }
 

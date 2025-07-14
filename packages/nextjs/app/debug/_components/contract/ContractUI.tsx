@@ -6,9 +6,12 @@ import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
 import { Address, Balance } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useNetworkColor } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { UnifiedAddress } from "~~/components/scaffold-eth/UnifiedAddress";
+import { UnifiedBalance } from "~~/components/scaffold-eth/UnifiedBalance";
+import { useNetworkColor } from "~~/hooks/scaffold-eth";
+import { useUnifiedDeployedContractInfo } from "~~/hooks/scaffold-eth/useUnifiedDeployedContractInfo";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
+import { useActiveNetworkInfo } from "~~/utils/scaffold-eth/unifiedContractsData";
 
 type ContractUIProps = {
   contractName: ContractName;
@@ -20,8 +23,10 @@ type ContractUIProps = {
  **/
 export const ContractUI = ({ contractName, className = "" }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const { targetNetwork } = useTargetNetwork();
-  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo({ contractName });
+  const { network: activeNetwork, blockchain } = useActiveNetworkInfo();
+  const { data: deployedContractData, isLoading: deployedContractLoading } = useUnifiedDeployedContractInfo({
+    contractName,
+  });
   const networkColor = useNetworkColor();
 
   if (deployedContractLoading) {
@@ -35,7 +40,7 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
   if (!deployedContractData) {
     return (
       <p className="text-3xl mt-14">
-        {`No contract found by the name of "${contractName}" on chain "${targetNetwork.name}"!`}
+        {`No contract found by the name of "${contractName}" on chain "${activeNetwork?.name}"!`}
       </p>
     );
   }
@@ -48,24 +53,26 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
             <div className="flex">
               <div className="flex flex-col gap-1">
                 <span className="font-bold">{contractName}</span>
-                <Address address={deployedContractData.address} onlyEnsOrAddress />
+                <UnifiedAddress address={deployedContractData.address} onlyEnsOrAddress />
                 <div className="flex gap-1 items-center">
                   <span className="font-bold text-sm">Balance:</span>
-                  <Balance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />
+                  <UnifiedBalance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />
                 </div>
               </div>
             </div>
-            {targetNetwork && (
+            {activeNetwork && (
               <p className="my-0 text-sm">
                 <span className="font-bold">Network</span>:{" "}
-                <span style={{ color: networkColor }}>{targetNetwork.name}</span>
+                <span style={{ color: networkColor }}>
+                  {activeNetwork.name} ({blockchain})
+                </span>
               </p>
             )}
           </div>
           <div className="bg-base-300 rounded-3xl px-6 lg:px-8 py-4 shadow-lg shadow-base-300">
             <ContractVariables
               refreshDisplayVariables={refreshDisplayVariables}
-              deployedContractData={deployedContractData}
+              deployedContractData={deployedContractData as any}
             />
           </div>
         </div>
@@ -78,7 +85,7 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
                 </div>
               </div>
               <div className="p-5 divide-y divide-base-300">
-                <ContractReadMethods deployedContractData={deployedContractData} />
+                <ContractReadMethods deployedContractData={deployedContractData as any} />
               </div>
             </div>
           </div>
@@ -91,7 +98,7 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
               </div>
               <div className="p-5 divide-y divide-base-300">
                 <ContractWriteMethods
-                  deployedContractData={deployedContractData}
+                  deployedContractData={deployedContractData as any}
                   onChange={triggerRefreshDisplayVariables}
                 />
               </div>

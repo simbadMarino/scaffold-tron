@@ -4,13 +4,17 @@ import { useEffect, useMemo } from "react";
 import { useSessionStorage } from "usehooks-ts";
 import { BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import { ContractUI } from "~~/app/debug/_components/contract";
+import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { ContractName, GenericContract } from "~~/utils/scaffold-eth/contract";
-import { useAllContracts } from "~~/utils/scaffold-eth/contractsData";
+import { useActiveNetworkInfo, useUnifiedContracts } from "~~/utils/scaffold-eth/unifiedContractsData";
 
 const selectedContractStorageKey = "scaffoldEth2.selectedContract";
 
 export function DebugContracts() {
-  const contractsData = useAllContracts();
+  const { activeBlockchain, setActiveBlockchain } = useUnifiedWeb3();
+  const contractsData = useUnifiedContracts();
+  const { network, blockchain, explorerUrl } = useActiveNetworkInfo();
+
   const contractNames = useMemo(
     () =>
       Object.keys(contractsData).sort((a, b) => {
@@ -31,10 +35,54 @@ export function DebugContracts() {
     }
   }, [contractNames, selectedContract, setSelectedContract]);
 
+  const handleBlockchainSwitch = (blockchain: "ethereum" | "tron") => {
+    setActiveBlockchain(blockchain);
+  };
+
   return (
     <div className="flex flex-col gap-y-6 lg:gap-y-8 py-8 lg:py-12 justify-center items-center">
+      {/* Blockchain Switcher */}
+      <div className="flex flex-col items-center gap-4 w-full max-w-7xl px-6 lg:px-10">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-semibold">Debug Contracts on:</h2>
+          <div className="tabs tabs-boxed bg-base-200">
+            <button
+              className={`tab tab-lg ${activeBlockchain === "ethereum" ? "tab-active" : ""}`}
+              onClick={() => handleBlockchainSwitch("ethereum")}
+            >
+              <span className="text-blue-500 mr-2">🔵</span>
+              Ethereum
+            </button>
+            <button
+              className={`tab tab-lg ${activeBlockchain === "tron" ? "tab-active" : ""}`}
+              onClick={() => handleBlockchainSwitch("tron")}
+            >
+              <span className="text-red-500 mr-2">🔴</span>
+              Tron
+            </button>
+          </div>
+        </div>
+
+        {/* Network Info */}
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span>Network:</span>
+          <span className="font-medium">{network?.name}</span>
+          <span>•</span>
+          <a href={explorerUrl} target="_blank" rel="noopener noreferrer" className="link link-primary">
+            Block Explorer
+          </a>
+        </div>
+      </div>
+
       {contractNames.length === 0 ? (
-        <p className="text-3xl mt-14">No contracts found!</p>
+        <div className="text-center">
+          <p className="text-3xl mt-14">No contracts found!</p>
+          <p className="text-lg text-gray-600 mt-4">
+            {activeBlockchain === "tron"
+              ? "Deploy your contracts to Tron using: yarn tron:deploy:testnet"
+              : "Deploy your contracts to Ethereum using: yarn deploy"}
+          </p>
+        </div>
       ) : (
         <>
           {contractNames.length > 1 && (
@@ -55,13 +103,16 @@ export function DebugContracts() {
                       <BarsArrowUpIcon className="h-4 w-4 cursor-pointer" />
                     </span>
                   )}
+                  {(contractsData[contractName] as any)?.isTron && (
+                    <span className="badge badge-xs badge-error ml-1">TRX</span>
+                  )}
                 </button>
               ))}
             </div>
           )}
           {contractNames.map(contractName => (
             <ContractUI
-              key={contractName}
+              key={`${activeBlockchain}-${contractName}`}
               contractName={contractName}
               className={contractName === selectedContract ? "" : "hidden"}
             />

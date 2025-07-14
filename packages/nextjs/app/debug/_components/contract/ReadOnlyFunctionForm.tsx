@@ -13,8 +13,12 @@ import {
   getParsedContractFunctionArgs,
   transformAbiFunction,
 } from "~~/app/debug/_components/contract";
+import deployedTronContracts from "~~/contracts/deployedTronContracts";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useTron } from "~~/services/web3/tronConfig";
+import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
+import { ContractName } from "~~/utils/scaffold-eth/contract";
 
 type ReadOnlyFunctionFormProps = {
   contractAddress: Address;
@@ -31,9 +35,13 @@ export const ReadOnlyFunctionForm = ({
 }: ReadOnlyFunctionFormProps) => {
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [result, setResult] = useState<unknown>();
+  const [isManualLoading, setIsManualLoading] = useState(false);
+  const { activeBlockchain } = useUnifiedWeb3();
+  const { tronWeb } = useTron();
   const { targetNetwork } = useTargetNetwork();
 
-  const { isFetching, refetch, error } = useReadContract({
+  // For Ethereum contracts
+  const ethereumRead = useReadContract({
     address: contractAddress,
     functionName: abiFunction.name,
     abi: abi,
@@ -44,6 +52,9 @@ export const ReadOnlyFunctionForm = ({
       retry: false,
     },
   });
+
+  const isLoading = activeBlockchain === "ethereum" ? ethereumRead.isFetching : isManualLoading;
+  const error = activeBlockchain === "ethereum" ? ethereumRead.error : null;
 
   useEffect(() => {
     if (error) {
@@ -88,12 +99,50 @@ export const ReadOnlyFunctionForm = ({
         <button
           className="btn btn-secondary btn-sm self-end md:self-start"
           onClick={async () => {
-            const { data } = await refetch();
-            setResult(data);
+            if (activeBlockchain === "ethereum") {
+              const { data } = await ethereumRead.refetch();
+              setResult(data);
+            } else {
+              // Handle Tron read
+              try {
+                setIsManualLoading(true);
+                if (tronWeb && contractAddress) {
+                  // Get the actual Tron address from deployedTronContracts
+                  const { network: tronNetwork } = useTron();
+                  const tronContracts = (deployedTronContracts as any)[tronNetwork?.id || 0];
+
+                  // Find the contract name by searching for the address (though this is a bit hacky)
+                  let tronAddress = contractAddress;
+                  if (tronContracts) {
+                    for (const [contractName, contractData] of Object.entries(tronContracts)) {
+                      if ((contractData as any).address) {
+                        tronAddress = (contractData as any).address;
+                        break;
+                      }
+                    }
+                  }
+
+                  if (!tronAddress) {
+                    throw new Error("Tron contract address not found");
+                  }
+
+                  console.log("Using Tron contract address:", tronAddress);
+                  const contract = await tronWeb.contract().at(tronAddress);
+                  const args = getParsedContractFunctionArgs(form);
+                  const data = await contract[abiFunction.name](...args).call();
+                  setResult(data);
+                }
+              } catch (error) {
+                console.error("Tron contract read error:", error);
+                notification.error("Failed to read from Tron contract");
+              } finally {
+                setIsManualLoading(false);
+              }
+            }
           }}
-          disabled={isFetching}
+          disabled={isLoading}
         >
-          {isFetching && <span className="loading loading-spinner loading-xs"></span>}
+          {isLoading && <span className="loading loading-spinner loading-xs"></span>}
           Read 📡
         </button>
       </div>

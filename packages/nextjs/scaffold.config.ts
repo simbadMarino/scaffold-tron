@@ -1,4 +1,5 @@
 import * as chains from "viem/chains";
+import { tronMainnet, tronNile, tronShasta } from "~~/utils/scaffold-eth/networks";
 
 export type ScaffoldConfig = {
   targetNetworks: readonly chains.Chain[];
