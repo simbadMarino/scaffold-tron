@@ -535,6 +535,278 @@ const scaffoldConfig = {
 };
 ```
 
+## 📊 Substreams
+
+Substreams is a powerful blockchain data indexing technology that enables real-time and historical data extraction from TRON (and other blockchains). This toolkit includes TRON Foundational Modules that provide pre-built data extraction capabilities for TRON blockchain analysis, DeFi applications, and analytics.
+
+### **🔍 What are Substreams?**
+
+Substreams allow you to:
+
+-   **Extract blockchain data** in real-time as blocks are produced
+-   **Transform and filter** transaction data based on your requirements
+-   **Build composable modules** that can be combined for complex data processing
+-   **Stream data efficiently** with parallel processing and caching
+
+### **🔑 Authentication Setup**
+
+#### **1. StreamingFast API Authentication**
+
+For streaming live blockchain data, you need a StreamingFast API key:
+
+```bash
+# Set your StreamingFast API key
+export STREAMINGFAST_KEY="your-streamingfast-api-key-here"
+
+# Create the authentication function
+function sftoken {
+  export SUBSTREAMS_API_TOKEN=$(curl https://auth.streamingfast.io/v1/auth/issue -s --data-binary '{"api_key":"'$STREAMINGFAST_KEY'"}' | jq -r .token)
+  echo "Token set in SUBSTREAMS_API_TOKEN"
+}
+
+# Get authentication token
+sftoken
+```
+
+**Get your StreamingFast API key from:**
+
+-   [https://app.streamingfast.io/](https://app.streamingfast.io/) - Sign up for free tier
+
+#### **2. Substreams Registry Authentication**
+
+For publishing and downloading packages from substreams.dev:
+
+```bash
+# Login with your registry token
+substreams registry login
+# Paste your token when prompted
+
+# Or set environment variable
+export SUBSTREAMS_REGISTRY_TOKEN="your-registry-token-here"
+```
+
+**Get your registry token from:**
+
+-   [https://substreams.dev/account](https://substreams.dev/account) - Generate API tokens
+
+### **📦 Package Management**
+
+#### **Option 1: Download Pre-built Package (Recommended)**
+
+The fastest way to get started is downloading the official TRON Foundational Modules:
+
+```bash
+# Navigate to substreams directory
+cd packages/substreams
+
+# Download the official TRON foundational package
+substreams pack tron-foundational@v0.1.2 -o bin/tron-foundational-v0.1.2.spkg
+
+# Verify the package
+substreams info bin/tron-foundational-v0.1.2.spkg
+```
+
+**Package Contents:**
+
+-   **`map_transactions`** - Extracts all non-failed transactions with full details
+-   **`index_transactions`** - Creates searchable transaction indices
+-   **`filtered_transactions`** - Filters transactions by type, contract, or other parameters
+
+#### **Option 2: Compile Locally**
+
+For custom development or modifications:
+
+```bash
+# Install Rust and WASM target
+rustup target add wasm32-unknown-unknown
+
+# Install Substreams CLI
+brew install streamingfast/tap/substreams
+
+# Compile the local package
+cd packages/substreams
+substreams build
+
+# Package the compiled module
+substreams pack -o bin/my-custom-package.spkg
+```
+
+### **🧪 CLI Testing Examples**
+
+#### **Basic Transaction Streaming**
+
+```bash
+# Authenticate first
+sftoken
+
+# Stream recent transactions (1 block from block 50M)
+substreams run bin/tron-foundational-v0.1.2.spkg map_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s 50000000 -t +1
+
+# Stream 10 blocks of data
+substreams run bin/tron-foundational-v0.1.2.spkg map_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s 50000000 -t +10
+```
+
+**Expected Output:**
+
+```json
+{
+  "transactions": [
+    {
+      "hash": "0xabc123...",
+      "block_number": 50000000,
+      "transaction_type": "TriggerSmartContract",
+      "from_address": "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb",
+      "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+      "amount": "1000000",
+      "gas_used": 65000,
+      "events": [...]
+    }
+  ]
+}
+```
+
+#### **Filtered Transaction Streaming**
+
+```bash
+# Filter only smart contract interactions
+substreams run bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s 50000000 -t +1 \
+  -p filtered_transactions:"contract_type:TriggerSmartContract"
+
+# Filter by specific contract address (USDT example)
+substreams run bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s 50000000 -t +1 \
+  -p filtered_transactions:"contract_address:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+
+# Filter by transaction amount (transfers > 1000 TRX)
+substreams run bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s 50000000 -t +1 \
+  -p filtered_transactions:"min_amount:1000000000"  # 1000 TRX in sun units
+```
+
+#### **Historical Data Analysis**
+
+```bash
+# Analyze a specific date range (block range for 2024-01-01)
+substreams run bin/tron-foundational-v0.1.2.spkg map_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s 56000000 -t 56010000  # ~1 day of blocks
+
+# Stream with output to file
+substreams run bin/tron-foundational-v0.1.2.spkg map_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s 50000000 -t +100 \
+  --output-file ./data/tron-transactions.jsonl
+```
+
+#### **Real-time Monitoring**
+
+```bash
+# Stream live data (no end block specified)
+substreams run bin/tron-foundational-v0.1.2.spkg map_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s -1  # Start from latest block
+
+# Monitor DeFi activity (JustSwap, SunSwap contracts)
+substreams run bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s -1 \
+  -p filtered_transactions:"contract_type:TriggerSmartContract"
+```
+
+### **🔧 Common CLI Parameters**
+
+| Parameter           | Description           | Example                                |
+| ------------------- | --------------------- | -------------------------------------- |
+| `-e, --endpoint`    | Substreams endpoint   | `mainnet.tron.streamingfast.io:443`    |
+| `-s, --start-block` | Starting block number | `50000000` or `-1` (latest)            |
+| `-t, --stop-block`  | Ending block number   | `+10` (10 blocks) or `50000100`        |
+| `-p, --params`      | Module parameters     | `"contract_type:TriggerSmartContract"` |
+| `--output-file`     | Save output to file   | `./data/output.jsonl`                  |
+| `--output-format`   | Output format         | `json`, `jsonl`                        |
+
+### **📊 Available TRON Endpoints**
+
+| Network         | Endpoint                                | Description              |
+| --------------- | --------------------------------------- | ------------------------ |
+| **TRON Native** | `mainnet.tron.streamingfast.io:443`     | Full TRON protocol data  |
+| **TRON EVM**    | `mainnet-evm.tron.streamingfast.io:443` | EVM-compatible data only |
+
+### **🔍 Data Types You Can Extract**
+
+**Transaction Types:**
+
+-   `TransferContract` - Basic TRX transfers
+-   `TriggerSmartContract` - Smart contract interactions (DeFi, tokens)
+-   `TransferAssetContract` - TRC-10 token transfers
+-   `CreateSmartContract` - Contract deployments
+-   `FreezeBalanceContract` - Staking operations
+-   `VoteWitnessContract` - Super Representative voting
+-   And 24 more transaction types!
+
+**Rich Data Fields:**
+
+-   Transaction hashes and signatures
+-   Gas/Energy consumption and costs
+-   Contract addresses and function calls
+-   Event logs and return values
+-   Account balances and state changes
+-   Network resource usage (bandwidth, energy)
+
+### **🎯 Use Cases**
+
+**DeFi Analytics:**
+
+```bash
+# Monitor DEX trading activity
+substreams run bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s -1 \
+  -p filtered_transactions:"contract_type:TriggerSmartContract,contract_address:TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE"
+```
+
+**Token Transfer Monitoring:**
+
+```bash
+# Track USDT transfers
+substreams run bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s -1 \
+  -p filtered_transactions:"contract_address:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+```
+
+**Large Transaction Alerts:**
+
+```bash
+# Monitor whale transactions (>100,000 TRX)
+substreams run bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s -1 \
+  -p filtered_transactions:"min_amount:100000000000"
+```
+
+### **📚 Additional Resources**
+
+-   **Substreams Documentation**: [https://substreams.streamingfast.io/](https://substreams.streamingfast.io/)
+-   **TRON Foundational Modules**: [https://substreams.dev/packages/tron-foundational](https://substreams.dev/packages/tron-foundational)
+-   **StreamingFast Endpoints**: [https://substreams.streamingfast.io/reference-and-specs/chains-and-endpoints](https://substreams.streamingfast.io/reference-and-specs/chains-and-endpoints)
+-   **TRON Protocol Docs**: [https://developers.tron.network/](https://developers.tron.network/)
+
+### **🚨 Important Notes**
+
+-   **Authentication Required**: Both StreamingFast API key and registry tokens are required
+-   **Rate Limits**: Free tier has usage limits; check [StreamingFast pricing](https://streamingfast.io/pricing)
+-   **Block Numbers**: TRON block numbers are different from Ethereum; current block ~57M+
+-   **Data Costs**: Streaming large ranges consumes significant bandwidth
+-   **Real-time vs Historical**: Historical data (older blocks) may have higher latency
+
 ## 💡 Development Tips
 
 ### For Ethereum Development:
@@ -549,6 +821,14 @@ const scaffoldConfig = {
 -   Use `yarn tron:balance` to check funding status
 -   Test on Shasta testnet before mainnet deployment
 -   Contract deployment costs ~50-100 TRX on testnets
+
+### For Substreams Development:
+
+-   **Start with pre-built packages** before creating custom modules
+-   **Test with small block ranges** first (`-t +1` or `-t +10`)
+-   **Use filtering** to reduce data volume and costs
+-   **Monitor rate limits** on free tier accounts
+-   **Authenticate properly** before streaming data
 
 ### Dual-Blockchain Development:
 
