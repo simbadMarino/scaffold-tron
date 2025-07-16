@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
 import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
+import { GraphQLProvider } from "~~/components/providers/GraphQLProvider";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { TronProvider } from "~~/services/web3/tronConfig";
@@ -57,7 +58,9 @@ export const ScaffoldTronAppWithProviders = ({ children }: { children: React.Rea
         >
           <TronProvider>
             <UnifiedWeb3Provider>
-              <ScaffoldTronApp>{children}</ScaffoldTronApp>
+              <GraphQLProvider>
+                <ScaffoldTronApp>{children}</ScaffoldTronApp>
+              </GraphQLProvider>
             </UnifiedWeb3Provider>
           </TronProvider>
         </RainbowKitProvider>

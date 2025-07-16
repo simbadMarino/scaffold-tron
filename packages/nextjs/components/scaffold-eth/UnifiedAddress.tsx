@@ -62,7 +62,30 @@ export const UnifiedAddress = ({
   const isTronAddress = useMemo(() => {
     if (!address) return false;
     const addressStr = address.toString();
-    return addressStr.startsWith("T") && addressStr.length === 34;
+
+    // Traditional TRON addresses start with "T" and are 34 characters
+    if (addressStr.startsWith("T") && addressStr.length === 34) {
+      return true;
+    }
+
+    // TRON hex addresses (contract addresses) start with "0x41"
+    if (addressStr.startsWith("0x41") && addressStr.length === 42) {
+      return true;
+    }
+
+    // Other TRON address formats (like base58 encoded without T prefix)
+    // For this application, we'll treat addresses that don't look like Ethereum addresses as TRON addresses
+    if (!addressStr.startsWith("0x") || addressStr.length !== 42) {
+      return true;
+    }
+
+    // Try to validate as Ethereum address - if it fails, assume it's TRON
+    try {
+      getAddress(addressStr);
+      return false; // Valid Ethereum address
+    } catch {
+      return true; // Invalid Ethereum address, assume TRON
+    }
   }, [address]);
 
   // For Ethereum addresses, use the original Address component
@@ -92,6 +115,19 @@ export const UnifiedAddress = ({
   // Generate block explorer link
   const blockExplorerLink = useMemo(() => {
     if (!addressStr || !tronNetwork?.explorerUrl) return "";
+
+    // For hex addresses starting with 0x41, convert to base58 format for the explorer
+    if (addressStr.startsWith("0x41") && addressStr.length === 42) {
+      // For now, use the hex address directly - TronScan supports both formats
+      return `${tronNetwork.explorerUrl}/#/address/${addressStr}`;
+    }
+
+    // For traditional TRON addresses (starting with T)
+    if (addressStr.startsWith("T") && addressStr.length === 34) {
+      return `${tronNetwork.explorerUrl}/#/address/${addressStr}`;
+    }
+
+    // For other formats, try to construct a link anyway
     return `${tronNetwork.explorerUrl}/#/address/${addressStr}`;
   }, [addressStr, tronNetwork?.explorerUrl]);
 
