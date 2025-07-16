@@ -31,7 +31,7 @@ export const DisplayVariable = ({
 }: DisplayVariableProps) => {
   const { activeBlockchain } = useUnifiedWeb3();
   const { targetNetwork } = useTargetNetwork();
-  const { tronWeb, network: tronNetwork } = useTron();
+  const { tronWeb, network: tronNetwork, isConnected, account, connect } = useTron();
   const [tronResult, setTronResult] = useState<any>(undefined);
   const [isTronLoading, setIsTronLoading] = useState(false);
   const [tronError, setTronError] = useState<string | null>(null);
@@ -67,6 +67,12 @@ export const DisplayVariable = ({
       return;
     }
 
+    // Check if wallet is connected
+    if (!isConnected || !account?.address) {
+      setTronError("Please connect your TronLink wallet to read contract data");
+      return;
+    }
+
     try {
       setIsTronLoading(true);
       setTronError(null);
@@ -88,12 +94,27 @@ export const DisplayVariable = ({
         throw new Error("Tron contract address not found");
       }
 
-      const contract = await tronWeb.contract().at(tronAddress);
-      const data = await contract[abiFunction.name]().call();
-      setTronResult(data);
+      // Ensure TronWeb has the wallet address set
+      if (window.tronWeb && window.tronWeb.ready) {
+        // Use window.tronWeb (from TronLink) for contract calls
+        const contract = await window.tronWeb.contract().at(tronAddress);
+        const data = await contract[abiFunction.name]().call();
+        setTronResult(data);
+      } else {
+        throw new Error("TronLink wallet not properly connected");
+      }
     } catch (err: any) {
       console.error("Error reading Tron contract:", err);
-      setTronError(err.message || "Failed to read contract");
+      const errorMessage = err.message || "Failed to read contract";
+
+      // Provide helpful error messages
+      if (errorMessage.includes("owner_address")) {
+        setTronError("Please connect your TronLink wallet to read contract data");
+      } else if (errorMessage.includes("TronLink")) {
+        setTronError("TronLink wallet not detected. Please install TronLink extension");
+      } else {
+        setTronError(errorMessage);
+      }
     } finally {
       setIsTronLoading(false);
     }
@@ -138,13 +159,29 @@ export const DisplayVariable = ({
       </div>
       <div className="text-base-content/80 flex flex-col items-start">
         <div>
-          <div
-            className={`break-all block transition bg-transparent ${
-              showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""
-            }`}
-          >
-            {displayTxResult(result)}
-          </div>
+          {activeBlockchain === "tron" && !isConnected ? (
+            <div className="flex flex-col items-start space-y-2">
+              <div className="text-orange-600 dark:text-orange-400 text-sm">🔒 TronLink wallet connection required</div>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={async () => {
+                  await connect();
+                }}
+              >
+                Connect TronLink
+              </button>
+            </div>
+          ) : error ? (
+            <div className="text-red-600 dark:text-red-400 text-sm">❌ {String(error)}</div>
+          ) : (
+            <div
+              className={`break-all block transition bg-transparent ${
+                showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""
+              }`}
+            >
+              {displayTxResult(result)}
+            </div>
+          )}
         </div>
       </div>
     </div>
