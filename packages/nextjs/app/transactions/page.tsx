@@ -10,6 +10,7 @@ import {
 } from "../../lib/graphql-client";
 import { useQuery } from "urql";
 import { AddressInput, UnifiedAddress } from "~~/components/scaffold-eth";
+import { getTronScanTxHash } from "~~/utils/scaffold-eth/tron-address-utils";
 
 export default function TransactionsPage() {
   const [contractAddress, setContractAddress] = useState<string>("");
@@ -186,7 +187,7 @@ export default function TransactionsPage() {
                   <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-mono">
                       <a
-                        href={`https://tronscan.org/#/transaction/${tx.transactionHash}`}
+                        href={`https://tronscan.org/#/transaction/${getTronScanTxHash(tx.transactionHash)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"

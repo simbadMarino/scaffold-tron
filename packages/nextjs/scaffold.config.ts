@@ -23,7 +23,7 @@ const scaffoldConfig = {
   // - tronShasta: Shasta testnet (for development)
   // - tronNile: Nile testnet (for development)
   // - tronMainnet: Tron mainnet (for production)
-  targetTronNetwork: tronShasta,
+  targetTronNetwork: tronMainnet,
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)

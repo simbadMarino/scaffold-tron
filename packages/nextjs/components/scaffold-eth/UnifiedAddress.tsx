@@ -6,6 +6,7 @@ import { getAddress } from "viem";
 import { useTron } from "~~/services/web3/tronConfig";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { AddressType } from "~~/types/abitype/abi";
+import { getTronScanAddress, isMalformedTronAddress } from "~~/utils/scaffold-eth/tron-address-utils";
 
 type UnifiedAddressProps = {
   address?: AddressType | string;
@@ -68,8 +69,13 @@ export const UnifiedAddress = ({
       return true;
     }
 
-    // TRON hex addresses (contract addresses) start with "0x41"
+    // TRON hex addresses (contract addresses) start with "0x41" - prioritize this check
     if (addressStr.startsWith("0x41") && addressStr.length === 42) {
+      return true;
+    }
+
+    // Check if we're using TRON as the active blockchain
+    if (activeBlockchain === "tron") {
       return true;
     }
 
@@ -86,7 +92,7 @@ export const UnifiedAddress = ({
     } catch {
       return true; // Invalid Ethereum address, assume TRON
     }
-  }, [address]);
+  }, [address, activeBlockchain]);
 
   // For Ethereum addresses, use the original Address component
   if (!isTronAddress) {
@@ -103,33 +109,41 @@ export const UnifiedAddress = ({
 
   // For Tron addresses, render enhanced display with copy functionality
   const addressStr = address?.toString() || "";
-  const displayAddress = useMemo(() => {
+
+  // Convert to base58 for display
+  const base58Address = useMemo(() => {
     if (!addressStr) return "";
+    return getTronScanAddress(addressStr);
+  }, [addressStr]);
+
+  const displayAddress = useMemo(() => {
+    if (!base58Address) return "";
 
     if (format === "short") {
-      return `${addressStr.slice(0, 6)}...${addressStr.slice(-4)}`;
+      return `${base58Address.slice(0, 6)}...${base58Address.slice(-4)}`;
     }
-    return addressStr;
-  }, [addressStr, format]);
+    return base58Address;
+  }, [base58Address, format]);
 
   // Generate block explorer link
   const blockExplorerLink = useMemo(() => {
-    if (!addressStr || !tronNetwork?.explorerUrl) return "";
+    if (!base58Address || !tronNetwork?.explorerUrl) return "";
 
-    // For hex addresses starting with 0x41, convert to base58 format for the explorer
-    if (addressStr.startsWith("0x41") && addressStr.length === 42) {
-      // For now, use the hex address directly - TronScan supports both formats
-      return `${tronNetwork.explorerUrl}/#/address/${addressStr}`;
+    // Don't create links for malformed addresses from substreams
+    if (isMalformedTronAddress(base58Address)) {
+      return "";
     }
 
-    // For traditional TRON addresses (starting with T)
-    if (addressStr.startsWith("T") && addressStr.length === 34) {
-      return `${tronNetwork.explorerUrl}/#/address/${addressStr}`;
-    }
+    // Known contract addresses that should use /contract/ path
+    const knownContractAddresses = [
+      "TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5", // JustLend contract
+      // Add more known contract addresses here
+    ];
 
-    // For other formats, try to construct a link anyway
-    return `${tronNetwork.explorerUrl}/#/address/${addressStr}`;
-  }, [addressStr, tronNetwork?.explorerUrl]);
+    const isContractAddress = knownContractAddresses.includes(base58Address);
+    const path = isContractAddress ? "contract" : "address";
+    return `${tronNetwork.explorerUrl}/#/${path}/${base58Address}`;
+  }, [base58Address, tronNetwork?.explorerUrl]);
 
   if (!addressStr) {
     return (
@@ -145,6 +159,30 @@ export const UnifiedAddress = ({
           <div className={`ml-1.5 skeleton rounded-lg ${textSizeMap[size]}`}>
             <span className="invisible">T123...456</span>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle malformed addresses from substreams
+  if (isMalformedTronAddress(addressStr)) {
+    return (
+      <div className="flex items-center space-x-2">
+        <div
+          className="shrink-0 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold"
+          style={{
+            width: `${blockieSizeMap[size] * 4}px`,
+            height: `${blockieSizeMap[size] * 4}px`,
+            fontSize: `${blockieSizeMap[size]}px`,
+          }}
+        >
+          ⚠️
+        </div>
+        <div className="flex flex-col">
+          <span className={`ml-1.5 ${textSizeMap[size]} font-mono text-red-500 dark:text-red-400`}>
+            {format === "short" ? `${addressStr.slice(0, 6)}...${addressStr.slice(-4)}` : addressStr}
+          </span>
+          <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-500">Malformed address</span>
         </div>
       </div>
     );
