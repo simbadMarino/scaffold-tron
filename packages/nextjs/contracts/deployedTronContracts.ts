@@ -9,6 +9,7 @@
 
 export type TronContract = {
   address: string;
+  addressBase58?: string; // Base58 format for block explorer links
   abi: readonly any[];
   inheritedFunctions?: Record<string, string>;
 };
@@ -163,7 +164,8 @@ const deployedTronContracts = {
   // Shasta Testnet (chainId: 2494104990)
   2494104990: {
     YourContract: {
-      address: "41d08e9275cb4e3f30e92c16d51c7f5c4c9fc99902",
+      address: "4136d5dedfd8537d9bb516a00822d0e3e33a368837",
+      addressBase58: "TEy9hQcHpJxkQSeq7pw1kc8JHqV7WrTh4v",
       abi: yourcontractAbi,
       inheritedFunctions: {},
     },

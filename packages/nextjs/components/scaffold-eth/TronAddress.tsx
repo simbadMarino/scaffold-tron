@@ -7,6 +7,7 @@ import { useTron } from "~~/services/web3/tronConfig";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { AddressType } from "~~/types/abitype/abi";
 import { getTronScanAddress, isMalformedTronAddress } from "~~/utils/scaffold-eth/tron-address-utils";
+import { useUnifiedContracts } from "~~/utils/scaffold-eth/unifiedContractsData";
 
 type TronAddressProps = {
   address?: AddressType | string;
@@ -14,6 +15,7 @@ type TronAddressProps = {
   format?: "short" | "long";
   size?: "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl";
   onlyEnsOrAddress?: boolean;
+  contractName?: string; // Optional contract name to get base58 address
 };
 
 const textSizeMap = {
@@ -55,9 +57,22 @@ export const TronAddress = ({
   format = "short",
   size = "base",
   onlyEnsOrAddress = false,
+  contractName,
 }: TronAddressProps) => {
   const { activeBlockchain } = useUnifiedWeb3();
   const { network: tronNetwork } = useTron();
+  const contractsData = useUnifiedContracts();
+
+  // Get base58 address from contract data if available
+  const getBase58Address = useMemo(() => {
+    if (contractName && contractsData[contractName]) {
+      const contract = contractsData[contractName] as any;
+      if (contract.addressBase58) {
+        return contract.addressBase58;
+      }
+    }
+    return getTronScanAddress(address?.toString() || "");
+  }, [address, contractName, contractsData]);
 
   // Determine if this is a Tron address
   const isTronAddress = useMemo(() => {
@@ -71,6 +86,11 @@ export const TronAddress = ({
 
     // TRON hex addresses (contract addresses) start with "0x41" - prioritize this check
     if (addressStr.startsWith("0x41") && addressStr.length === 42) {
+      return true;
+    }
+
+    // TRON hex addresses without 0x prefix (like from deployments) - 40 chars starting with "41"
+    if (addressStr.length === 40 && addressStr.startsWith("41")) {
       return true;
     }
 
@@ -113,8 +133,8 @@ export const TronAddress = ({
   // Convert to base58 for display
   const base58Address = useMemo(() => {
     if (!addressStr) return "";
-    return getTronScanAddress(addressStr);
-  }, [addressStr]);
+    return getBase58Address;
+  }, [addressStr, getBase58Address]);
 
   const displayAddress = useMemo(() => {
     if (!base58Address) return "";
@@ -134,16 +154,40 @@ export const TronAddress = ({
       return "";
     }
 
-    // Known contract addresses that should use /contract/ path
-    const knownContractAddresses = [
-      "TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5", // JustLend contract
-      // Add more known contract addresses here
-    ];
+    // Check if this is a contract address
+    const isContractAddress = (() => {
+      // Known contract addresses that should use /contract/ path
+      const knownContractAddresses = [
+        "TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5", // JustLend contract
+        // Add more known contract addresses here
+      ];
 
-    const isContractAddress = knownContractAddresses.includes(base58Address);
+      if (knownContractAddresses.includes(base58Address)) {
+        return true;
+      }
+
+      // Check if the original address is from our deployed contracts
+      // TRON contract addresses typically start with "41" in hex format
+      const originalAddressStr = address?.toString() || "";
+      if (originalAddressStr.startsWith("41") || originalAddressStr.startsWith("0x41")) {
+        return true; // This is likely a contract address
+      }
+
+      // For TRON, addresses starting with "T" followed by specific patterns are often contracts
+      // Contract addresses tend to have different patterns than regular wallet addresses
+      // This is a heuristic approach
+      if (base58Address.startsWith("T") && base58Address.length === 34) {
+        // You can add more specific contract detection logic here
+        // For now, we'll use a simple heuristic: if it's not a typical user address pattern
+        return false; // Default to address for T-addresses unless specifically known
+      }
+
+      return false;
+    })();
+
     const path = isContractAddress ? "contract" : "address";
     return `${tronNetwork.explorerUrl}/#/${path}/${base58Address}`;
-  }, [base58Address, tronNetwork?.explorerUrl]);
+  }, [base58Address, tronNetwork?.explorerUrl, address]);
 
   if (!addressStr) {
     return (

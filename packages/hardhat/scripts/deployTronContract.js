@@ -114,10 +114,24 @@ async function deployContract(networkName = "shasta") {
 
     console.log("✅ Contract deployed successfully!");
     console.log(`📍 Contract address: ${deployedContract.address}`);
-    console.log(`🔗 View on explorer: https://${networkName}.tronscan.org/#/address/${deployedContract.address}`);
+
+    // TronWeb returns the address in base58 format, not hex
+    // We should use it directly without conversion
+    const base58Address = deployedContract.address;
+
+    // Validate the address format
+    const isValidAddress = tronWeb.isAddress(base58Address);
+    console.log(`📍 Address validation: ${isValidAddress}`);
+    console.log(`📍 Address format: ${base58Address.startsWith("T") ? "base58" : "unknown"}`);
+
+    if (!isValidAddress) {
+      console.warn("⚠️  Warning: Deployed contract address may be invalid");
+    }
+
+    console.log(`🔗 View on explorer: https://${networkName}.tronscan.org/#/contract/${base58Address}`);
 
     // Update the deployments file
-    updateDeploymentFile(networkName, deployedContract.address, network.network_id);
+    updateDeploymentFile(networkName, base58Address, network.network_id, tronWeb);
 
     // Automatically generate the TypeScript contracts file
     console.log("🔄 Generating TypeScript contracts file...");
@@ -138,7 +152,7 @@ async function deployContract(networkName = "shasta") {
   }
 }
 
-function updateDeploymentFile(networkName, contractAddress, networkId) {
+function updateDeploymentFile(networkName, contractAddress, networkId, tronWeb) {
   const deploymentsPath = path.join(__dirname, "..", "..", "nextjs", "tron-deployments.json");
   let deployments = {};
 
@@ -154,8 +168,32 @@ function updateDeploymentFile(networkName, contractAddress, networkId) {
     deployments[networkId] = {};
   }
 
+  // Convert address to base58 format for block explorer
+  let base58Address = contractAddress;
+
+  try {
+    // Check if address needs conversion (hex format)
+    if (contractAddress.startsWith("0x41") || (contractAddress.length === 40 && contractAddress.startsWith("41"))) {
+      // Convert hex to base58
+      const hexWithPrefix = contractAddress.startsWith("0x") ? contractAddress : `0x${contractAddress}`;
+      base58Address = tronWeb.address.fromHex(hexWithPrefix);
+      console.log(`📍 Converted to base58: ${contractAddress} → ${base58Address}`);
+    } else if (tronWeb.isAddress(contractAddress)) {
+      // Already in base58 format
+      base58Address = contractAddress;
+      console.log(`📍 Address already in base58 format: ${contractAddress}`);
+    }
+  } catch (error) {
+    console.warn("⚠️  Address conversion failed:", error.message);
+    base58Address = contractAddress;
+  }
+
+  console.log(`📍 Storing contract address: ${contractAddress}`);
+  console.log(`📍 Base58 address for explorer: ${base58Address}`);
+
   deployments[networkId].YourContract = {
     address: contractAddress,
+    addressBase58: base58Address,
     network: networkName,
     deployedAt: new Date().toISOString(),
   };

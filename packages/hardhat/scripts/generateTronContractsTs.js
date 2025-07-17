@@ -10,12 +10,139 @@
 const fs = require("fs");
 const path = require("path");
 
+// Base58 alphabet for TRON addresses
+const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+/**
+ * Convert hex string to Uint8Array
+ */
+function hexToBytes(hex) {
+  const result = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    result[i / 2] = parseInt(hex.substr(i, 2), 16);
+  }
+  return result;
+}
+
+/**
+ * Simple base58 encode function
+ */
+function base58Encode(bytes) {
+  if (bytes.length === 0) return "";
+
+  let digits = [0];
+
+  for (let i = 0; i < bytes.length; i++) {
+    let carry = bytes[i];
+    for (let j = 0; j < digits.length; j++) {
+      carry += digits[j] << 8;
+      digits[j] = carry % 58;
+      carry = Math.floor(carry / 58);
+    }
+
+    while (carry > 0) {
+      digits.push(carry % 58);
+      carry = Math.floor(carry / 58);
+    }
+  }
+
+  // Handle leading zeros
+  let leadingZeros = 0;
+  for (let i = 0; i < bytes.length && bytes[i] === 0; i++) {
+    leadingZeros++;
+  }
+
+  let result = BASE58_ALPHABET[0].repeat(leadingZeros);
+  for (let i = digits.length - 1; i >= 0; i--) {
+    result += BASE58_ALPHABET[digits[i]];
+  }
+
+  return result;
+}
+
+/**
+ * Simple SHA256 hash function (using Node.js crypto)
+ */
+function sha256(data) {
+  const crypto = require("crypto");
+  return crypto.createHash("sha256").update(data).digest();
+}
+
+/**
+ * Convert TRON hex address to base58 with checksum
+ */
+function tronHexToBase58(hexAddress) {
+  try {
+    // Remove 0x prefix if present
+    if (hexAddress.startsWith("0x")) {
+      hexAddress = hexAddress.slice(2);
+    }
+
+    // Convert hex to bytes
+    const addressBytes = hexToBytes(hexAddress);
+
+    // Calculate checksum (double SHA256)
+    const hash1 = sha256(addressBytes);
+    const hash2 = sha256(hash1);
+    const checksum = hash2.slice(0, 4);
+
+    // Combine address and checksum
+    const addressWithChecksum = new Uint8Array(addressBytes.length + checksum.length);
+    addressWithChecksum.set(addressBytes);
+    addressWithChecksum.set(checksum, addressBytes.length);
+
+    // Encode to base58
+    return base58Encode(addressWithChecksum);
+  } catch (error) {
+    console.error("Error converting hex to base58:", error);
+    return null;
+  }
+}
+
 // Tron network configurations
 const TRON_NETWORKS = {
   2494104990: { name: "Shasta Testnet", rpc: "https://api.shasta.trongrid.io" },
   3448148188: { name: "Nile Testnet", rpc: "https://nile.trongrid.io" },
   728126428: { name: "Tron Mainnet", rpc: "https://api.trongrid.io" },
 };
+
+/**
+ * Convert hex address to base58 format for TRON
+ */
+function convertHexToBase58(address) {
+  try {
+    // Check if it's already in base58 format (starts with T)
+    if (address.startsWith("T")) {
+      return address;
+    }
+
+    // Check if it's a hex address (starts with 41 and is 42 chars long)
+    if (address.startsWith("41") && address.length === 42) {
+      const base58Address = tronHexToBase58(address);
+      if (base58Address) {
+        console.log(`🔄 Converted ${address} → ${base58Address}`);
+        return base58Address;
+      }
+    }
+
+    // If it's a 40-char hex without 41 prefix, add the prefix
+    if (address.length === 40 && /^[0-9a-fA-F]+$/.test(address)) {
+      const hexWithPrefix = "41" + address;
+      const base58Address = tronHexToBase58(hexWithPrefix);
+      if (base58Address) {
+        console.log(`🔄 Converted ${hexWithPrefix} → ${base58Address}`);
+        return base58Address;
+      }
+    }
+
+    // Return as-is if format is unknown
+    console.log(`⚠️  Unknown address format: ${address}`);
+    return address;
+  } catch (error) {
+    console.error(`❌ Error converting address ${address}:`, error.message);
+    return address;
+  }
+}
 
 /**
  * Read Tron deployment information from tron-deployments.json
@@ -98,8 +225,18 @@ const ${contractName.toLowerCase()}Abi = ${JSON.stringify(abi, null, 2)} as cons
       const abiVarName = `${contractName.toLowerCase()}Abi`;
       // Handle both string addresses and deployment objects
       const address = typeof deployment === "string" ? deployment : deployment.address;
+
+      // Convert hex address to base58 format
+      const addressBase58 = convertHexToBase58(address);
+
       networkDeployments += `    ${contractName}: {\n`;
       networkDeployments += `      address: "${address}",\n`;
+
+      // Always include addressBase58 if conversion was successful and different
+      if (addressBase58 && addressBase58 !== address) {
+        networkDeployments += `      addressBase58: "${addressBase58}",\n`;
+      }
+
       networkDeployments += `      abi: ${abiVarName},\n`;
       networkDeployments += `      inheritedFunctions: {},\n`;
       networkDeployments += `    },\n`;
@@ -119,6 +256,7 @@ const ${contractName.toLowerCase()}Abi = ${JSON.stringify(abi, null, 2)} as cons
 
 export type TronContract = {
   address: string;
+  addressBase58?: string; // Base58 format for block explorer links
   abi: readonly any[];
   inheritedFunctions?: Record<string, string>;
 };

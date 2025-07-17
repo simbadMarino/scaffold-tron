@@ -45,6 +45,29 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
     );
   }
 
+  // Render appropriate address and balance components based on blockchain type
+  const renderAddressComponent = () => {
+    if (blockchain === "Tron") {
+      return <TronAddress address={deployedContractData.address} onlyEnsOrAddress contractName={contractName} />;
+    } else {
+      return <Address address={deployedContractData.address} onlyEnsOrAddress />;
+    }
+  };
+
+  const renderBalanceComponent = () => {
+    if (blockchain === "Tron") {
+      return (
+        <TronBalance
+          address={deployedContractData.address}
+          className="px-0 h-1.5 min-h-[0.375rem]"
+          contractName={contractName}
+        />
+      );
+    } else {
+      return <Balance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />;
+    }
+  };
+
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-6 px-6 lg:px-10 lg:gap-12 w-full max-w-7xl my-0 ${className}`}>
       <div className="col-span-5 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
@@ -53,10 +76,10 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
             <div className="flex">
               <div className="flex flex-col gap-1">
                 <span className="font-bold">{contractName}</span>
-                <TronAddress address={deployedContractData.address} onlyEnsOrAddress />
+                {renderAddressComponent()}
                 <div className="flex gap-1 items-center">
                   <span className="font-bold text-sm">Balance:</span>
-                  <TronBalance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />
+                  {renderBalanceComponent()}
                 </div>
               </div>
             </div>

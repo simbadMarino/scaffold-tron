@@ -17,6 +17,7 @@ function formatTronContracts(tronContracts: any, networkId: number) {
     const contract = networkContracts[contractName];
     formattedContracts[contractName] = {
       address: contract.address as `0x${string}`, // Cast for compatibility
+      addressBase58: contract.addressBase58, // Include base58 address for TronScan links
       abi: contract.abi,
       inheritedFunctions: {},
       isTron: true, // Mark as Tron contract
