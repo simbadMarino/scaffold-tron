@@ -61,6 +61,38 @@ function base58Encode(bytes) {
 }
 
 /**
+ * Simple base58 decode function
+ */
+function base58Decode(s) {
+  let decoded = 0;
+  let multi = 1;
+
+  for (let i = s.length - 1; i >= 0; i--) {
+    const digit = BASE58_ALPHABET.indexOf(s[i]);
+    if (digit === -1) {
+      throw new Error(`Invalid base58 character: ${s[i]}`);
+    }
+    decoded += multi * digit;
+    multi *= 58;
+  }
+
+  // Convert to bytes
+  const bytes = [];
+  while (decoded > 0) {
+    bytes.unshift(decoded % 256);
+    decoded = Math.floor(decoded / 256);
+  }
+
+  // Handle leading zeros
+  let leadingZeros = 0;
+  for (let i = 0; i < s.length && s[i] === BASE58_ALPHABET[0]; i++) {
+    leadingZeros++;
+  }
+
+  return new Uint8Array([...new Array(leadingZeros).fill(0), ...bytes]);
+}
+
+/**
  * Simple SHA256 hash function (using Node.js crypto)
  */
 function sha256(data) {
@@ -95,6 +127,25 @@ function tronHexToBase58(hexAddress) {
     return base58Encode(addressWithChecksum);
   } catch (error) {
     console.error("Error converting hex to base58:", error);
+    return null;
+  }
+}
+
+/**
+ * Convert TRON base58 address to hex
+ */
+function tronBase58ToHex(base58Address) {
+  try {
+    // Decode from base58
+    const decoded = base58Decode(base58Address);
+
+    // Remove checksum (last 4 bytes)
+    const addressBytes = decoded.slice(0, -4);
+
+    // Convert to hex
+    return Array.from(addressBytes, byte => byte.toString(16).padStart(2, "0")).join("");
+  } catch (error) {
+    console.error("Error converting base58 to hex:", error);
     return null;
   }
 }
@@ -148,7 +199,8 @@ function convertHexToBase58(address) {
  * Read Tron deployment information from tron-deployments.json
  */
 function readTronDeployments() {
-  const deploymentsPath = path.join(__dirname, "..", "..", "nextjs", "tron-deployments.json");
+  // Read from the root level tron-deployments.json
+  const deploymentsPath = path.join(__dirname, "..", "..", "tron-deployments.json");
 
   if (!fs.existsSync(deploymentsPath)) {
     console.log("📝 No tron-deployments.json found. Creating template...");
@@ -226,15 +278,32 @@ const ${contractName.toLowerCase()}Abi = ${JSON.stringify(abi, null, 2)} as cons
       // Handle both string addresses and deployment objects
       const address = typeof deployment === "string" ? deployment : deployment.address;
 
-      // Convert hex address to base58 format
-      const addressBase58 = convertHexToBase58(address);
+      let hexAddress = address;
+      let base58Address = address;
+
+      // Determine which format we have and convert accordingly
+      if (address.startsWith("T")) {
+        // We have base58, convert to hex for the address field
+        base58Address = address;
+        const convertedHex = tronBase58ToHex(address);
+        if (convertedHex) {
+          hexAddress = convertedHex;
+        }
+      } else {
+        // We have hex, convert to base58
+        hexAddress = address;
+        const convertedBase58 = convertHexToBase58(address);
+        if (convertedBase58) {
+          base58Address = convertedBase58;
+        }
+      }
 
       networkDeployments += `    ${contractName}: {\n`;
-      networkDeployments += `      address: "${address}",\n`;
+      networkDeployments += `      address: "${hexAddress}",\n`;
 
-      // Always include addressBase58 if conversion was successful and different
-      if (addressBase58 && addressBase58 !== address) {
-        networkDeployments += `      addressBase58: "${addressBase58}",\n`;
+      // Always include addressBase58 if we have a valid base58 address and it's different from hex
+      if (base58Address && base58Address !== hexAddress && base58Address.startsWith("T")) {
+        networkDeployments += `      addressBase58: "${base58Address}",\n`;
       }
 
       networkDeployments += `      abi: ${abiVarName},\n`;
@@ -301,7 +370,7 @@ function addDeployment(contractName, address, networkId, metadata = {}) {
     ...metadata,
   };
 
-  const deploymentsPath = path.join(__dirname, "..", "..", "nextjs", "tron-deployments.json");
+  const deploymentsPath = path.join(__dirname, "..", "..", "tron-deployments.json");
   fs.writeFileSync(deploymentsPath, JSON.stringify(deployments, null, 2));
 
   console.log(`✅ Added ${contractName} deployment: ${address} on network ${networkId}`);

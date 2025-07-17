@@ -9,6 +9,7 @@ import { useUnifiedContracts } from "~~/utils/scaffold-eth/unifiedContractsData"
 
 type UnifiedContract = {
   address: string;
+  addressBase58?: string; // Base58 address for Tron contracts
   abi: any[];
   inheritedFunctions?: any;
   isTron?: boolean;
@@ -66,8 +67,9 @@ export function useUnifiedDeployedContractInfo<TContractName extends ContractNam
           }
 
           try {
-            // Try to get contract from TronWeb
-            const contract = await tronWeb.contract().at(deployedContract.address);
+            // Try to get contract from TronWeb using base58 address
+            const addressToUse = deployedContract.addressBase58 || deployedContract.address;
+            const contract = await tronWeb.contract().at(addressToUse);
             if (contract) {
               setStatus(ContractCodeStatus.DEPLOYED);
             } else {

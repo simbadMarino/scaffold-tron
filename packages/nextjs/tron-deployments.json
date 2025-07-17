@@ -1,10 +1,12 @@
 {
+  "_note": "This file is OBSOLETE. The script now reads from packages/tron-deployments.json at the root level.",
+  "_generated_file": "Check packages/nextjs/contracts/deployedTronContracts.ts for the actual generated contracts",
   "2494104990": {
     "YourContract": {
-      "address": "4136d5dedfd8537d9bb516a00822d0e3e33a368837",
-      "addressBase58": "TEy9hQcHpJxkQSeq7pw1kc8JHqV7WrTh4v",
+      "address": "41b6bbd5114e2ff5bee360af85bcdcbf1729d2a525",
+      "addressBase58": "THHrvDG92VzpXg2arnYyFC3EZD8DMEdr49",
       "network": "shasta",
-      "deployedAt": "2025-07-17T13:47:44.947Z"
+      "deployedAt": "2025-07-17T14:04:14.020Z"
     }
   }
 }

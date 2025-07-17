@@ -116,7 +116,8 @@ export const ReadOnlyFunctionForm = ({
                   if (tronContracts) {
                     for (const [contractName, contractData] of Object.entries(tronContracts)) {
                       if ((contractData as any).address) {
-                        tronAddress = (contractData as any).address;
+                        // Use base58 address for TronWeb interactions
+                        tronAddress = (contractData as any).addressBase58 || (contractData as any).address;
                         break;
                       }
                     }
