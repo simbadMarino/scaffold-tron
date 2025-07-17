@@ -1,20 +1,24 @@
 #!/usr/bin/env node
 
+const path = require("path");
+// Load environment variables from the local .env file
+require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+
 console.log("Testing TronWeb import...");
 
-// Test 1: Regular require
+// Test 1: Regular require with proper import pattern
 try {
-  const TronWeb = require("tronweb");
+  const tronWebModule = require("tronweb");
+  const TronWeb = tronWebModule.TronWeb || tronWebModule.default || tronWebModule;
+
   console.log("✅ Regular require works");
   console.log("TronWeb type:", typeof TronWeb);
-  console.log("TronWeb.default type:", typeof TronWeb.default);
-  console.log("TronWeb keys:", Object.keys(TronWeb));
+  console.log("TronWeb.default type:", typeof tronWebModule.default);
+  console.log("TronWeb keys:", Object.keys(tronWebModule));
 
   // Test constructor
   if (typeof TronWeb === "function") {
     console.log("✅ TronWeb is a function (constructor)");
-  } else if (typeof TronWeb.default === "function") {
-    console.log("✅ TronWeb.default is a function (constructor)");
   } else {
     console.log("❌ No constructor found");
   }
@@ -47,8 +51,8 @@ try {
 // Test 3: Test actual instantiation
 (async () => {
   try {
-    const TronWeb = require("tronweb");
-    const Constructor = TronWeb.default || TronWeb;
+    const tronWebModule = require("tronweb");
+    const Constructor = tronWebModule.TronWeb || tronWebModule.default || tronWebModule;
 
     if (typeof Constructor === "function") {
       const instance = new Constructor({
@@ -65,5 +69,31 @@ try {
     }
   } catch (error) {
     console.log("❌ Instance creation failed:", error.message);
+  }
+})();
+
+// Test 4: Test with environment variables
+(async () => {
+  try {
+    const privateKey = process.env.TRON_PRIVATE_KEY_SHASTA || process.env.TRON_PRIVATE_KEY;
+    if (privateKey) {
+      console.log("✅ Found private key in environment");
+      const tronWebModule = require("tronweb");
+      const Constructor = tronWebModule.TronWeb || tronWebModule.default || tronWebModule;
+
+      const instance = new Constructor({
+        fullHost: "https://api.shasta.trongrid.io",
+        solidityNode: "https://api.shasta.trongrid.io",
+        eventServer: "https://api.shasta.trongrid.io",
+        privateKey: privateKey,
+      });
+
+      const address = instance.address.fromPrivateKey(privateKey);
+      console.log("✅ Generated address:", address);
+    } else {
+      console.log("⚠️  No private key found in environment");
+    }
+  } catch (error) {
+    console.log("❌ Environment test failed:", error.message);
   }
 })();

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Script to generate deployedTronContracts.ts from Tron build artifacts
+ * Script to generate deployedTronContracts.ts from Tron deployments
  * Similar to how deployedContracts.ts is generated for Ethereum
  *
- * Usage: node scripts/generateTronContracts.js
+ * Usage: node scripts/generateTronContractsTs.js
  */
 
 const fs = require("fs");
@@ -18,11 +18,10 @@ const TRON_NETWORKS = {
 };
 
 /**
- * Read Tron deployment information from a JSON file
- * This would be created by your Tron deployment scripts
+ * Read Tron deployment information from tron-deployments.json
  */
 function readTronDeployments() {
-  const deploymentsPath = path.join(__dirname, "../../tron-deployments.json");
+  const deploymentsPath = path.join(__dirname, "..", "..", "nextjs", "tron-deployments.json");
 
   if (!fs.existsSync(deploymentsPath)) {
     console.log("📝 No tron-deployments.json found. Creating template...");
@@ -40,13 +39,15 @@ function readTronDeployments() {
 
 /**
  * Read contract ABI from Hardhat artifacts
- * Since Tron contracts are Solidity, we can reuse Ethereum ABIs
  */
 function getContractAbi(contractName) {
   const artifactPath = path.join(
     __dirname,
-    "../../hardhat/artifacts/contracts",
-    `${contractName}.sol/${contractName}.json`,
+    "..",
+    "artifacts",
+    "contracts",
+    `${contractName}.sol`,
+    `${contractName}.json`,
   );
 
   if (!fs.existsSync(artifactPath)) {
@@ -93,8 +94,10 @@ const ${contractName.toLowerCase()}Abi = ${JSON.stringify(abi, null, 2)} as cons
     networkDeployments += `  // ${network.name} (chainId: ${chainId})\n`;
     networkDeployments += `  ${chainId}: {\n`;
 
-    Object.entries(networkContracts).forEach(([contractName, address]) => {
+    Object.entries(networkContracts).forEach(([contractName, deployment]) => {
       const abiVarName = `${contractName.toLowerCase()}Abi`;
+      // Handle both string addresses and deployment objects
+      const address = typeof deployment === "string" ? deployment : deployment.address;
       networkDeployments += `    ${contractName}: {\n`;
       networkDeployments += `      address: "${address}",\n`;
       networkDeployments += `      abi: ${abiVarName},\n`;
@@ -129,7 +132,7 @@ export default deployedTronContracts;
 `;
 
   // Write the file
-  const outputPath = path.join(__dirname, "../contracts/deployedTronContracts.ts");
+  const outputPath = path.join(__dirname, "..", "..", "nextjs", "contracts", "deployedTronContracts.ts");
   fs.writeFileSync(outputPath, fileContent);
 
   console.log("✅ Generated deployedTronContracts.ts");
@@ -145,16 +148,22 @@ export default deployedTronContracts;
 /**
  * Add a new deployment to tron-deployments.json
  */
-function addDeployment(contractName, address, networkId) {
+function addDeployment(contractName, address, networkId, metadata = {}) {
   const deployments = readTronDeployments();
 
   if (!deployments[networkId]) {
     deployments[networkId] = {};
   }
 
-  deployments[networkId][contractName] = address;
+  // Store as deployment object with metadata for consistency
+  deployments[networkId][contractName] = {
+    address: address,
+    deployedAt: new Date().toISOString(),
+    network: Object.values(TRON_NETWORKS).find(n => n.name.includes(networkId.toString()))?.name || "Unknown",
+    ...metadata,
+  };
 
-  const deploymentsPath = path.join(__dirname, "../../tron-deployments.json");
+  const deploymentsPath = path.join(__dirname, "..", "..", "nextjs", "tron-deployments.json");
   fs.writeFileSync(deploymentsPath, JSON.stringify(deployments, null, 2));
 
   console.log(`✅ Added ${contractName} deployment: ${address} on network ${networkId}`);
@@ -173,12 +182,12 @@ if (require.main === module) {
   } else {
     console.log(`
 Usage:
-  node scripts/generateTronContracts.js                          # Generate from tron-deployments.json
-  node scripts/generateTronContracts.js add <name> <address> <networkId>  # Add deployment and regenerate
+  node scripts/generateTronContractsTs.js                          # Generate from tron-deployments.json
+  node scripts/generateTronContractsTs.js add <name> <address> <networkId>  # Add deployment and regenerate
 
 Examples:
-  node scripts/generateTronContracts.js add YourContract THH...49 2494104990
-  node scripts/generateTronContracts.js generate
+  node scripts/generateTronContractsTs.js add YourContract THH...49 2494104990
+  node scripts/generateTronContractsTs.js generate
 `);
   }
 }

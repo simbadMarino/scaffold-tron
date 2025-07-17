@@ -1,8 +1,25 @@
 #!/usr/bin/env node
 
-const TronWeb = require("tronweb");
+// Import TronWeb using the correct property (same as other scripts)
+let TronWeb;
+try {
+  const tronWebModule = require("tronweb");
+  TronWeb = tronWebModule.TronWeb || tronWebModule.default || tronWebModule;
+
+  // Verify TronWeb is a constructor
+  if (typeof TronWeb !== "function") {
+    throw new Error("TronWeb is not a constructor function");
+  }
+} catch (error) {
+  console.log("❌ TronWeb import failed:", error.message);
+  console.log("💡 Try running: yarn remove tronweb && yarn add tronweb@latest");
+  process.exit(1);
+}
 const fs = require("fs");
 const path = require("path");
+
+// Load environment variables from the local .env file
+require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
 
 // Tron network configurations
 const networks = {
@@ -35,11 +52,14 @@ async function deployContract(networkName = "shasta") {
 
   console.log(`🚀 Deploying to ${networkName}...`);
 
-  // You'll need to set your private key as environment variable
-  const privateKey = process.env.TRON_PRIVATE_KEY;
+  // Load private key from environment variable
+  // Try network-specific key first, then fall back to generic key
+  const privateKey = process.env[`TRON_PRIVATE_KEY_${networkName.toUpperCase()}`] || process.env.TRON_PRIVATE_KEY;
+
   if (!privateKey) {
     console.error("❌ Please set TRON_PRIVATE_KEY environment variable");
-    console.log("Example: export TRON_PRIVATE_KEY=your_private_key_here");
+    console.log(`Example: export TRON_PRIVATE_KEY_${networkName.toUpperCase()}=your_private_key_here`);
+    console.log("Or: export TRON_PRIVATE_KEY=your_private_key_here");
     console.log("You can get testnet TRX from:");
     console.log("- Shasta: https://www.trongrid.io/shasta");
     console.log("- Nile: https://nile.tronscan.org/");
@@ -56,7 +76,7 @@ async function deployContract(networkName = "shasta") {
 
   try {
     // Get the contract bytecode and ABI from Hardhat artifacts
-    const contractPath = path.join(__dirname, "../../hardhat/artifacts/contracts/YourContract.sol/YourContract.json");
+    const contractPath = path.join(__dirname, "..", "artifacts", "contracts", "YourContract.sol", "YourContract.json");
 
     if (!fs.existsSync(contractPath)) {
       console.error("❌ Contract artifacts not found. Please run: yarn hardhat compile");
@@ -98,6 +118,17 @@ async function deployContract(networkName = "shasta") {
 
     // Update the deployments file
     updateDeploymentFile(networkName, deployedContract.address, network.network_id);
+
+    // Automatically generate the TypeScript contracts file
+    console.log("🔄 Generating TypeScript contracts file...");
+    try {
+      const { generateTronContractsFile } = require("./generateTronContractsTs");
+      generateTronContractsFile();
+      console.log("✅ TypeScript contracts file updated!");
+    } catch (genError) {
+      console.warn("⚠️  Failed to generate TypeScript contracts file:", genError.message);
+      console.log("💡 You can manually run: yarn generate:tron-contracts");
+    }
   } catch (error) {
     console.error("❌ Deployment failed:", error);
 
@@ -108,7 +139,7 @@ async function deployContract(networkName = "shasta") {
 }
 
 function updateDeploymentFile(networkName, contractAddress, networkId) {
-  const deploymentsPath = path.join(__dirname, "../tron-deployments.json");
+  const deploymentsPath = path.join(__dirname, "..", "..", "nextjs", "tron-deployments.json");
   let deployments = {};
 
   try {
@@ -131,7 +162,6 @@ function updateDeploymentFile(networkName, contractAddress, networkId) {
 
   fs.writeFileSync(deploymentsPath, JSON.stringify(deployments, null, 2));
   console.log(`📄 Updated deployments file: ${deploymentsPath}`);
-  console.log("🔄 Run: yarn generate:tron-contracts to update the frontend");
 }
 
 // Run the deployment

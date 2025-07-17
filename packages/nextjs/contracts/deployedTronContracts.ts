@@ -163,7 +163,7 @@ const deployedTronContracts = {
   // Shasta Testnet (chainId: 2494104990)
   2494104990: {
     YourContract: {
-      address: "THHrvDG92VzpXg2arnYyFC3EZD8DMEdr49",
+      address: "41d08e9275cb4e3f30e92c16d51c7f5c4c9fc99902",
       abi: yourcontractAbi,
       inheritedFunctions: {},
     },

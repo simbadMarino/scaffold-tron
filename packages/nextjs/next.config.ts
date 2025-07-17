@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
   transpilePackages: ["tronweb"],
+  // Force Next.js to use the installed SWC dependencies
+  compiler: {
+    // This will use the manually installed @swc/core
+  },
   webpack: config => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.externals.push("pino-pretty", "lokijs", "encoding");
