@@ -16096,6 +16096,7 @@ __metadata:
     husky: ~9.1.6
     lint-staged: ~13.2.2
     pg: ^8.16.3
+    usehooks-ts: ^3.1.1
   languageName: unknown
   linkType: soft
 
@@ -18331,7 +18332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"usehooks-ts@npm:~3.1.0":
+"usehooks-ts@npm:^3.1.1, usehooks-ts@npm:~3.1.0":
   version: 3.1.1
   resolution: "usehooks-ts@npm:3.1.1"
   dependencies:

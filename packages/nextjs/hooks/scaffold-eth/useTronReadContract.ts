@@ -47,8 +47,9 @@ export const useTronReadContract = ({
 
       console.log("Reading contract with address:", tronWeb.defaultAddress.base58);
 
-      // Create contract instance
-      const contract = await tronWeb.contract(contractInfo.abi, contractInfo.address);
+      // Create contract instance using base58 address
+      const contractAddress = contractInfo.addressBase58 || contractInfo.address;
+      const contract = await tronWeb.contract(contractInfo.abi, contractAddress);
 
       // Call the function
       const result = await contract[functionName](...args).call();
