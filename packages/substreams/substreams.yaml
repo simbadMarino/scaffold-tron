@@ -56,4 +56,4 @@ modules:
           type: proto:sf.substreams.tron.v1.Transactions
 
 params:
-    filtered_transactions: contract_type:TransferContract
+    filtered_transactions: contract_type:TriggerSmartContract
