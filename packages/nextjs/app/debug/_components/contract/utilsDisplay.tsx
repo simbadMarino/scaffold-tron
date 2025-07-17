@@ -1,7 +1,7 @@
 import { ReactElement, useState } from "react";
 import { TransactionBase, TransactionReceipt, formatEther, isAddress, isHex } from "viem";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
-import { UnifiedAddress } from "~~/components/scaffold-eth/UnifiedAddress";
+import { TronAddress } from "~~/components/scaffold-eth/TronAddress";
 import { replacer } from "~~/utils/scaffold-eth/common";
 
 type DisplayContent =
@@ -42,7 +42,7 @@ export const displayTxResult = (
     }
 
     if (isEthereumAddress || isTronAddress) {
-      return <UnifiedAddress address={displayContent} size={fontSize} onlyEnsOrAddress />;
+      return <TronAddress address={displayContent} size={fontSize} onlyEnsOrAddress />;
     }
 
     if (isHex(displayContent)) {

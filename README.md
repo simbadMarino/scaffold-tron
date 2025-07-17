@@ -396,15 +396,15 @@ Tests run against the Shasta testnet to verify contract functionality.
 
 ## 🎨 Enhanced UI Components
 
-### **UnifiedAddress Component**
+### **TronAddress Component**
 
-The `UnifiedAddress` component automatically detects and handles both Ethereum and Tron addresses:
+The `TronAddress` component automatically detects and handles both Ethereum and Tron addresses:
 
 ```typescript
-import { UnifiedAddress } from "~~/components/scaffold-eth";
+import { TronAddress } from "~~/components/scaffold-eth";
 
 // Works with both Ethereum (0x...) and Tron (T...) addresses
-<UnifiedAddress
+<TronAddress
     address="T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb"
     format="short"
     size="base"
@@ -490,9 +490,9 @@ tron-dapp/
 │       ├── app/                # Next.js app router
 │       ├── components/         # React components
 │       │   └── scaffold-eth/   # Enhanced components
-│       │       ├── UnifiedAddress.tsx     # Unified address component
-│       │       ├── UnifiedBalance.tsx     # Unified balance component
-│       │       └── UnifiedConnectButton.tsx # Dual-blockchain connect button
+│       │       ├── TronAddress.tsx     # Unified address component
+│       │       ├── TronBalance.tsx     # Unified balance component
+│       │       └── TronConnectButton.tsx # Dual-blockchain connect button
 │       ├── hooks/              # Custom React hooks
 │       │   └── scaffold-eth/   # Enhanced hooks
 │       │       ├── useTronReadContract.ts   # Tron contract reading
@@ -1032,7 +1032,7 @@ yarn substreams:cleandb
 # 2. Stream fresh data (10 blocks for quick demo)
 yarn substreams:demo
 
-# 3. View results at http://localhost:3000/transactions
+# 3. View results at http://localhost:3000/substreams
 ```
 
 This will:
@@ -1127,7 +1127,7 @@ yarn dev
 
 #### **View Transaction Data**
 
-Visit `http://localhost:3000/transactions` to see your real TRON transaction data displayed in a modern interface.
+Visit `http://localhost:3000/substreams` to see your real TRON transaction data displayed in a modern interface.
 
 **Features available:**
 
@@ -1376,11 +1376,11 @@ This complete pipeline gives you real-time access to TRON blockchain data with m
 -   Same Solidity code deploys to both networks
 -   Use network-specific tools for deployment and testing
 -   Configure target networks in `scaffold.config.ts`
--   Use `UnifiedAddress` component for consistent address display
+-   Use `TronAddress` component for consistent address display
 
 ### **UI/UX Best Practices:**
 
--   Use `UnifiedAddress` instead of `Address` for better Tron support
+-   Use `TronAddress` instead of `Address` for better Tron support
 -   Configure your preferred Tron network in scaffold config
 -   Test address copying and block explorer links
 -   Ensure proper network switching in your dApp
@@ -1391,7 +1391,7 @@ This complete pipeline gives you real-time access to TRON blockchain data with m
 
 -   🎨 **Rebranded to Scaffold-TRON** with proper Scaffold-ETH attribution
 -   ⚙️ **Unified Configuration**: Configure Tron networks in `scaffold.config.ts`
--   🔄 **Enhanced Components**: Improved UnifiedAddress with copy functionality and block explorer links
+-   🔄 **Enhanced Components**: Improved TronAddress with copy functionality and block explorer links
 -   📱 **Better UX**: Consistent address formatting and interaction patterns
 -   🏗️ **Component Renaming**: Updated internal component names for consistency
 -   🌐 **Network Utilities**: Added `getTargetTronNetwork()` utility function

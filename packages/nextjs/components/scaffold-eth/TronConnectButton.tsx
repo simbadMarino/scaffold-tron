@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { RainbowKitCustomConnectButton } from "./RainbowKitCustomConnectButton";
+import { TronAddress } from "./TronAddress";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useTron } from "~~/services/web3/tronConfig";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 
-export const UnifiedConnectButton = () => {
+export const TronConnectButton = () => {
   const { activeBlockchain, setActiveBlockchain, isConnected } = useUnifiedWeb3();
   const { connect: connectTron, account: tronAccount, isConnecting } = useTron();
   const [mounted, setMounted] = useState(false);
@@ -27,7 +28,7 @@ export const UnifiedConnectButton = () => {
     setActiveBlockchain(blockchain);
   };
 
-  const TronConnectButton = () => {
+  const TronConnectButtonInner = () => {
     if (!isConnected) {
       return (
         <button
@@ -44,9 +45,7 @@ export const UnifiedConnectButton = () => {
       <div className="flex items-center gap-2">
         <div className="flex flex-col items-center">
           <div className="text-sm font-medium">{tronAccount?.balance?.toFixed(2)} TRX</div>
-          <div className="text-xs text-gray-500">
-            {tronAccount?.address?.slice(0, 6)}...{tronAccount?.address?.slice(-4)}
-          </div>
+          <TronAddress address={tronAccount?.address} format="short" size="xs" />
         </div>
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-sm btn-outline">
@@ -90,7 +89,7 @@ export const UnifiedConnectButton = () => {
       </div>
 
       {/* Connection Display */}
-      {activeBlockchain === "ethereum" ? <RainbowKitCustomConnectButton /> : <TronConnectButton />}
+      {activeBlockchain === "ethereum" ? <RainbowKitCustomConnectButton /> : <TronConnectButtonInner />}
     </div>
   );
 };

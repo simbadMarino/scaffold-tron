@@ -8,7 +8,7 @@ import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { AddressType } from "~~/types/abitype/abi";
 import { getTronScanAddress, isMalformedTronAddress } from "~~/utils/scaffold-eth/tron-address-utils";
 
-type UnifiedAddressProps = {
+type TronAddressProps = {
   address?: AddressType | string;
   disableAddressLink?: boolean;
   format?: "short" | "long";
@@ -49,13 +49,13 @@ const copyIconSizeMap = {
 /**
  * Unified Address component that handles both Ethereum and Tron addresses
  */
-export const UnifiedAddress = ({
+export const TronAddress = ({
   address,
   disableAddressLink,
   format = "short",
   size = "base",
   onlyEnsOrAddress = false,
-}: UnifiedAddressProps) => {
+}: TronAddressProps) => {
   const { activeBlockchain } = useUnifiedWeb3();
   const { network: tronNetwork } = useTron();
 

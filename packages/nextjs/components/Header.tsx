@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
 import { FaucetButton } from "~~/components/scaffold-eth";
-import { UnifiedConnectButton } from "~~/components/scaffold-eth/UnifiedConnectButton";
+import { TronConnectButton } from "~~/components/scaffold-eth/TronConnectButton";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
@@ -22,8 +22,8 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/",
   },
   {
-    label: "Transactions",
-    href: "/transactions",
+    label: "TRON Substreams",
+    href: "/substreams",
   },
   {
     label: "Debug Contracts",
@@ -100,7 +100,7 @@ export const Header = () => {
         </ul>
       </div>
       <div className="navbar-end grow mr-4">
-        <UnifiedConnectButton />
+        <TronConnectButton />
         {isLocalNetwork && <FaucetButton />}
       </div>
     </div>

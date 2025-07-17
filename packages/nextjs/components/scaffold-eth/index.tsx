@@ -5,6 +5,6 @@ export * from "./Faucet";
 export * from "./FaucetButton";
 export * from "./Input";
 export * from "./RainbowKitCustomConnectButton";
-export * from "./UnifiedAddress";
-export * from "./UnifiedBalance";
+export * from "./TronAddress";
+export * from "./TronBalance";
 export * from "./TronWrongNetworkDropdown";

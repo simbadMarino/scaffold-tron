@@ -3,7 +3,7 @@ import { Balance as EthBalance } from "./Balance";
 import { Address, formatEther } from "viem";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 
-type UnifiedBalanceProps = {
+type TronBalanceProps = {
   address?: Address | string;
   className?: string;
   usdMode?: boolean;
@@ -12,7 +12,7 @@ type UnifiedBalanceProps = {
 /**
  * Display balance of an address for both Ethereum and Tron
  */
-export const UnifiedBalance = ({ address, className = "", usdMode }: UnifiedBalanceProps) => {
+export const TronBalance = ({ address, className = "", usdMode }: TronBalanceProps) => {
   // Determine if this is a Tron address
   const isTronAddress = useMemo(() => {
     if (!address) return false;

@@ -9,10 +9,10 @@ import {
   graphqlClient,
 } from "../../lib/graphql-client";
 import { useQuery } from "urql";
-import { AddressInput, UnifiedAddress } from "~~/components/scaffold-eth";
+import { AddressInput, TronAddress } from "~~/components/scaffold-eth";
 import { getTronScanTxHash } from "~~/utils/scaffold-eth/tron-address-utils";
 
-export default function TransactionsPage() {
+export default function SubstreamsPage() {
   const [contractAddress, setContractAddress] = useState<string>("");
   const [page, setPage] = useState(0);
   const [pageSize] = useState(20);
@@ -119,7 +119,7 @@ export default function TransactionsPage() {
           {isFiltered && (
             <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-sm text-blue-700 dark:text-blue-300">
-                Showing transactions for contract: <UnifiedAddress address={contractAddress} />
+                Showing transactions for contract: <TronAddress address={contractAddress} />
               </p>
             </div>
           )}
@@ -215,14 +215,14 @@ export default function TransactionsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {tx.fromAddress ? (
-                        <UnifiedAddress address={tx.fromAddress} />
+                        <TronAddress address={tx.fromAddress} />
                       ) : (
                         <span className="text-gray-400 dark:text-gray-500">—</span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {tx.toAddress ? (
-                        <UnifiedAddress address={tx.toAddress} />
+                        <TronAddress address={tx.toAddress} />
                       ) : (
                         <span className="text-gray-400 dark:text-gray-500">—</span>
                       )}
@@ -232,7 +232,7 @@ export default function TransactionsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {tx.contractAddress ? (
-                        <UnifiedAddress address={tx.contractAddress} />
+                        <TronAddress address={tx.contractAddress} />
                       ) : (
                         <span className="text-gray-400 dark:text-gray-500">—</span>
                       )}

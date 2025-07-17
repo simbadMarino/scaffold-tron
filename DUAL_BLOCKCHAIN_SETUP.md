@@ -25,7 +25,7 @@ I've successfully integrated Tron support into your Scaffold-ETH 2 frontend, cre
 
 ### 4. **Enhanced UI Components**
 
--   **UnifiedConnectButton**: Toggle between Ethereum and Tron with blockchain switcher
+-   **TronConnectButton**: Toggle between Ethereum and Tron with blockchain switcher
 -   **Dual Status Display**: Shows connection status for both blockchains
 -   **Updated Header**: Seamlessly integrates both wallet types
 
@@ -48,7 +48,7 @@ packages/nextjs/
 │   ├── useUnifiedReadContract.ts   # Unified read contract hook
 │   └── useUnifiedWriteContract.ts  # Unified write contract hook
 ├── components/scaffold-eth/
-│   └── UnifiedConnectButton.tsx    # Dual-blockchain connect button
+│   └── TronConnectButton.tsx    # Dual-blockchain connect button
 ├── contracts/
 │   └── deployedTronContracts.ts    # Tron contract configuration
 ├── types/
@@ -201,7 +201,7 @@ yarn start
 
 ## 🎨 UI Components Overview
 
-### UnifiedConnectButton
+### TronConnectButton
 
 -   Blockchain selector tabs (ETH/TRX)
 -   Ethereum: Shows RainbowKit connection

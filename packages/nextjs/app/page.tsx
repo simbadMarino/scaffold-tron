@@ -2,7 +2,7 @@
 
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { BugAntIcon, MagnifyingGlassIcon, RssIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useTronReadContract } from "~~/hooks/scaffold-eth/useTronReadContract";
@@ -67,6 +67,16 @@ const Home: NextPage = () => {
                 Explore your local transactions with the{" "}
                 <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
                   Block Explorer
+                </code>{" "}
+                tab.
+              </p>
+            </div>
+            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
+              <RssIcon className="h-8 w-8 fill-secondary" />
+              <p>
+                Stream real-time TRON blockchain transactions with{" "}
+                <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
+                  TRON Substreams
                 </code>{" "}
                 tab.
               </p>

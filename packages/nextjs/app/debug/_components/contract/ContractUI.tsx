@@ -6,8 +6,8 @@ import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
 import { Address, Balance } from "~~/components/scaffold-eth";
-import { UnifiedAddress } from "~~/components/scaffold-eth/UnifiedAddress";
-import { UnifiedBalance } from "~~/components/scaffold-eth/UnifiedBalance";
+import { TronAddress } from "~~/components/scaffold-eth/TronAddress";
+import { TronBalance } from "~~/components/scaffold-eth/TronBalance";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useUnifiedDeployedContractInfo } from "~~/hooks/scaffold-eth/useUnifiedDeployedContractInfo";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
@@ -53,10 +53,10 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
             <div className="flex">
               <div className="flex flex-col gap-1">
                 <span className="font-bold">{contractName}</span>
-                <UnifiedAddress address={deployedContractData.address} onlyEnsOrAddress />
+                <TronAddress address={deployedContractData.address} onlyEnsOrAddress />
                 <div className="flex gap-1 items-center">
                   <span className="font-bold text-sm">Balance:</span>
-                  <UnifiedBalance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />
+                  <TronBalance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />
                 </div>
               </div>
             </div>

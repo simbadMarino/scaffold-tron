@@ -117,7 +117,7 @@ The frontend will be available at `http://localhost:3000`
 
 1. **Navigate to Transactions Page**
 
-    - Visit `http://localhost:3000/transactions`
+    - Visit `http://localhost:3000/substreams`
     - Or click "Transactions" in the navigation menu
 
 2. **Filter by Contract Address**
