@@ -5,10 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
-import { FaucetButton } from "~~/components/scaffold-eth";
+import { BanknotesIcon, Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
+import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { TronConnectButton } from "~~/components/scaffold-eth/TronConnectButton";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
+import { TRON_NETWORKS } from "~~/services/web3/tronConfig";
+import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 
 type HeaderMenuLink = {
   label: string;
@@ -16,21 +19,35 @@ type HeaderMenuLink = {
   icon?: React.ReactNode;
 };
 
-export const menuLinks: HeaderMenuLink[] = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "TRON Substreams",
-    href: "/substreams",
-  },
-  {
+// Get menu links based on configuration
+const getMenuLinks = (): HeaderMenuLink[] => {
+  const { tronEnabled } = scaffoldConfig;
+
+  const baseLinks: HeaderMenuLink[] = [
+    {
+      label: "Home",
+      href: "/",
+    },
+  ];
+
+  // Only add TRON Substreams if tronEnabled is true
+  if (tronEnabled) {
+    baseLinks.push({
+      label: "TRON Substreams",
+      href: "/substreams",
+    });
+  }
+
+  baseLinks.push({
     label: "Debug Contracts",
     href: "/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
-  },
-];
+  });
+
+  return baseLinks;
+};
+
+export const menuLinks: HeaderMenuLink[] = getMenuLinks();
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
@@ -58,17 +75,73 @@ export const HeaderMenuLinks = () => {
   );
 };
 
+// Tron Faucet Button Component
+const TronFaucetButton = () => {
+  const { targetTronNetwork } = scaffoldConfig;
+  const tronNetworkInfo = TRON_NETWORKS[targetTronNetwork.id];
+
+  // Only show faucet for testnets
+  if (!tronNetworkInfo.testnet || !tronNetworkInfo.faucetUrl) {
+    return null;
+  }
+
+  const handleFaucetClick = () => {
+    window.open(tronNetworkInfo.faucetUrl, "_blank");
+  };
+
+  return (
+    <button
+      className="ml-1 btn btn-secondary btn-sm px-2 rounded-full"
+      onClick={handleFaucetClick}
+      title={`${tronNetworkInfo.name} Faucet`}
+    >
+      <BanknotesIcon className="h-4 w-4" />
+    </button>
+  );
+};
+
 /**
  * Site header
  */
 export const Header = () => {
   const { targetNetwork } = useTargetNetwork();
+  const { activeBlockchain } = useUnifiedWeb3();
   const isLocalNetwork = targetNetwork.id === hardhat.id;
 
   const burgerMenuRef = useRef<HTMLDetailsElement>(null);
   useOutsideClick(burgerMenuRef, () => {
     burgerMenuRef?.current?.removeAttribute("open");
   });
+
+  // Determine what connection component to show based on configuration
+  const showConnectionComponent = () => {
+    const { ethereumEnabled, tronEnabled } = scaffoldConfig;
+
+    if (ethereumEnabled && tronEnabled) {
+      // Both enabled - show unified switcher
+      return <TronConnectButton />;
+    } else if (ethereumEnabled && !tronEnabled) {
+      // Only Ethereum enabled
+      return <RainbowKitCustomConnectButton />;
+    } else if (!ethereumEnabled && tronEnabled) {
+      // Only Tron enabled - show Tron-only version
+      return <TronConnectButton />;
+    } else {
+      // Neither enabled - show nothing
+      return null;
+    }
+  };
+
+  // Determine what faucet button to show based on active blockchain
+  const showFaucetButton = () => {
+    if (activeBlockchain === "tron") {
+      // Show Tron faucet for testnets only
+      return <TronFaucetButton />;
+    } else {
+      // Show Ethereum faucet for local networks only
+      return isLocalNetwork && <FaucetButton />;
+    }
+  };
 
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
@@ -100,8 +173,8 @@ export const Header = () => {
         </ul>
       </div>
       <div className="navbar-end grow mr-4">
-        <TronConnectButton />
-        {isLocalNetwork && <FaucetButton />}
+        {showConnectionComponent()}
+        {showFaucetButton()}
       </div>
     </div>
   );

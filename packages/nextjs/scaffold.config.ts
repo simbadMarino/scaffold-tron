@@ -2,7 +2,9 @@ import * as chains from "viem/chains";
 import { tronMainnet, tronNile, tronShasta } from "~~/utils/scaffold-eth/networks";
 
 export type ScaffoldConfig = {
+  ethereumEnabled: boolean;
   targetNetworks: readonly chains.Chain[];
+  tronEnabled: boolean;
   // Add TRON network configuration
   targetTronNetwork: typeof tronShasta | typeof tronNile | typeof tronMainnet;
   pollingInterval: number;
@@ -15,9 +17,11 @@ export type ScaffoldConfig = {
 export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
+  ethereumEnabled: true,
   // The networks on which your DApp is live
   targetNetworks: [chains.hardhat],
 
+  tronEnabled: true,
   // The TRON network for your DApp
   // Available options:
   // - tronShasta: Shasta testnet (for development)

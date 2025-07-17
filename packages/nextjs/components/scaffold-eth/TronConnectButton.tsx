@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { RainbowKitCustomConnectButton } from "./RainbowKitCustomConnectButton";
 import { TronAddress } from "./TronAddress";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import scaffoldConfig from "~~/scaffold.config";
 import { useTron } from "~~/services/web3/tronConfig";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 
@@ -23,6 +24,8 @@ export const TronConnectButton = () => {
       </div>
     );
   }
+
+  const { ethereumEnabled, tronEnabled } = scaffoldConfig;
 
   const handleBlockchainSwitch = (blockchain: "ethereum" | "tron") => {
     setActiveBlockchain(blockchain);
@@ -70,26 +73,42 @@ export const TronConnectButton = () => {
     );
   };
 
-  return (
-    <div className="flex items-center gap-2">
-      {/* Blockchain Switcher */}
-      <div className="tabs tabs-boxed bg-base-200">
-        <button
-          className={`tab tab-sm ${activeBlockchain === "ethereum" ? "tab-active" : ""}`}
-          onClick={() => handleBlockchainSwitch("ethereum")}
-        >
-          <span className="text-xs">ETH</span>
-        </button>
-        <button
-          className={`tab tab-sm ${activeBlockchain === "tron" ? "tab-active" : ""}`}
-          onClick={() => handleBlockchainSwitch("tron")}
-        >
-          <span className="text-xs">TRX</span>
-        </button>
-      </div>
+  // If only Tron is enabled, show only the Tron connection button
+  if (tronEnabled && !ethereumEnabled) {
+    return <TronConnectButtonInner />;
+  }
 
-      {/* Connection Display */}
-      {activeBlockchain === "ethereum" ? <RainbowKitCustomConnectButton /> : <TronConnectButtonInner />}
-    </div>
-  );
+  // If only Ethereum is enabled, show only the Ethereum connection button
+  if (ethereumEnabled && !tronEnabled) {
+    return <RainbowKitCustomConnectButton />;
+  }
+
+  // If both are enabled, show the unified switcher
+  if (ethereumEnabled && tronEnabled) {
+    return (
+      <div className="flex items-center gap-2">
+        {/* Blockchain Switcher */}
+        <div className="tabs tabs-boxed bg-base-200">
+          <button
+            className={`tab tab-sm ${activeBlockchain === "ethereum" ? "tab-active" : ""}`}
+            onClick={() => handleBlockchainSwitch("ethereum")}
+          >
+            <span className="text-xs">ETH</span>
+          </button>
+          <button
+            className={`tab tab-sm ${activeBlockchain === "tron" ? "tab-active" : ""}`}
+            onClick={() => handleBlockchainSwitch("tron")}
+          >
+            <span className="text-xs">TRX</span>
+          </button>
+        </div>
+
+        {/* Connection Display */}
+        {activeBlockchain === "ethereum" ? <RainbowKitCustomConnectButton /> : <TronConnectButtonInner />}
+      </div>
+    );
+  }
+
+  // If neither is enabled, show nothing
+  return null;
 };
