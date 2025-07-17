@@ -47,6 +47,8 @@
         "substreams:streamdb": "cd packages/substreams && substreams run ./tron-foundational-v0.1.2.spkg map_transactions -s 55000000 -t +200 | node --max-old-space-size=8192 --expose-gc scripts/stream-direct-to-db.js",
         "substreams:demo": "cd packages/substreams && substreams run ./tron-foundational-v0.1.2.spkg map_transactions -s 55000100 -t +10 | node --max-old-space-size=4096 --expose-gc scripts/stream-direct-to-db.js",
         "substreams:fixvalues": "cd packages/substreams && node scripts/fix-transaction-values.js",
+        "substreams:dockerup": "docker compose -f packages/substreams/docker-compose.yml up",
+        "substreams:dockerdown": "docker compose -f packages/substreams/docker-compose.yml down",
         "test": "yarn hardhat:test",
         "vercel": "yarn workspace @se-2/nextjs vercel",
         "vercel:login": "yarn workspace @se-2/nextjs vercel:login",
