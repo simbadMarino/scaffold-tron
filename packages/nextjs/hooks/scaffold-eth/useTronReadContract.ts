@@ -26,11 +26,23 @@ export const useTronReadContract = ({
       return;
     }
 
-    // Check if TronWeb has an address set
-    if (!tronWeb.defaultAddress || !tronWeb.defaultAddress.base58) {
-      console.log("TronWeb address not set, waiting for connection...");
+    // Check if we have an account address from the context
+    if (!account?.address) {
+      console.log("Account address not available, waiting for connection...");
       setError("Wallet address not set");
       return;
+    }
+
+    // Set the address on TronWeb if not already set
+    if (!tronWeb.defaultAddress || !tronWeb.defaultAddress.base58) {
+      try {
+        tronWeb.setAddress(account.address);
+        console.log("Set TronWeb address to:", account.address);
+      } catch (error) {
+        console.error("Failed to set TronWeb address:", error);
+        setError("Failed to set wallet address");
+        return;
+      }
     }
 
     const networkContracts = (deployedTronContracts as any)[network.id];

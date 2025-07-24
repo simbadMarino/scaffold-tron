@@ -91,7 +91,14 @@ export const TronProvider = ({ children }: { children: ReactNode }) => {
     const initTronWeb = async () => {
       if (typeof window !== "undefined") {
         try {
-          // First try to use window.TronWeb if available (from TronLink)
+          // First try to use window.tronWeb if available (from TronLink)
+          if ((window as any).tronWeb && (window as any).tronWeb.ready) {
+            console.log("Using window.tronWeb (TronLink)");
+            setTronWeb((window as any).tronWeb);
+            return;
+          }
+
+          // Then try to use window.TronWeb if available (from TronLink)
           if ((window as any).TronWeb) {
             console.log("Using TronWeb from window (TronLink)");
             const TronWebConstructor = (window as any).TronWeb;
@@ -244,6 +251,19 @@ export const TronProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error("Failed to get account info:", error);
       }
+    } else if (tronWeb && tronWeb.defaultAddress) {
+      try {
+        const address = tronWeb.defaultAddress.base58;
+        const balanceResult = await tronWeb.trx.getBalance(address);
+        const balance = tronWeb.fromSun(balanceResult);
+
+        setAccount({
+          address,
+          balance: parseFloat(balance),
+        });
+      } catch (error) {
+        console.error("Failed to get account info:", error);
+      }
     }
   };
 
@@ -251,8 +271,11 @@ export const TronProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (tronWeb && account?.address) {
       try {
-        tronWeb.setAddress(account.address);
-        console.log("Set TronWeb address to:", account.address);
+        // Check if address is already set to avoid unnecessary calls
+        if (!tronWeb.defaultAddress || tronWeb.defaultAddress.base58 !== account.address) {
+          tronWeb.setAddress(account.address);
+          console.log("Set TronWeb address to:", account.address);
+        }
       } catch (error) {
         console.error("Failed to set TronWeb address:", error);
       }
