@@ -33,17 +33,16 @@ This guide will help you deploy your contracts to Tron testnets and update your 
 
 ### Set Environment Variable
 
+
+Create a `.env.local` file in the `packages/nextjs` directory:
+
 ```bash
-export TRON_PRIVATE_KEY="your_private_key_here"
-```
-
-Or create a `.env.local` file in the `packages/nextjs` directory:
-
-```
-TRON_PRIVATE_KEY=your_private_key_here
+cp .env.example .env
 ```
 
 ## Step 3: Compile Your Contract
+
+
 
 Make sure your contract is compiled:
 
@@ -156,6 +155,7 @@ const deployedTronContracts = {
 - Verify the contract address in `tron-deployments.json`
 
 ## Network Information
+
 
 | Network | Chain ID   | RPC URL                        | Explorer                    |
 | ------- | ---------- | ------------------------------ | --------------------------- |
