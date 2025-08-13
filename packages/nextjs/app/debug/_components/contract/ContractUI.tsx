@@ -10,11 +10,11 @@ import { TronAddress } from "~~/components/scaffold-eth/TronAddress";
 import { TronBalance } from "~~/components/scaffold-eth/TronBalance";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useUnifiedDeployedContractInfo } from "~~/hooks/scaffold-eth/useUnifiedDeployedContractInfo";
-import { ContractName } from "~~/utils/scaffold-eth/contract";
+//import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { useActiveNetworkInfo } from "~~/utils/scaffold-eth/unifiedContractsData";
 
 type ContractUIProps = {
-  contractName: ContractName;
+  contractName: string;
   className?: string;
 };
 

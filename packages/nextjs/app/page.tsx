@@ -4,8 +4,8 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon, RssIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
-import { useTronReadContract } from "~~/hooks/scaffold-eth/useTronReadContract";
+//import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
+//import { useTronReadContract } from "~~/hooks/scaffold-eth/useTronReadContract";
 import scaffoldConfig from "~~/scaffold.config";
 import { useTron } from "~~/services/web3/tronConfig";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
@@ -15,22 +15,6 @@ const Home: NextPage = () => {
   const { activeBlockchain, activeAccount, isConnected } = useUnifiedWeb3();
   const { network: tronNetwork } = useTron();
   const { ethereumEnabled, tronEnabled } = scaffoldConfig;
-
-  // Ethereum contract reading
-  const { data: ethereumGreeting } = useScaffoldReadContract({
-    contractName: "YourContract",
-    functionName: "greeting",
-  });
-
-  // Tron contract reading
-  const {
-    data: tronGreeting,
-    isLoading: tronLoading,
-    error: tronError,
-  } = useTronReadContract({
-    contractName: "YourContract",
-    functionName: "greeting",
-  });
 
   const getActiveBlockchainDisplay = () => {
     if (ethereumEnabled && tronEnabled) {
@@ -123,8 +107,6 @@ const Home: NextPage = () => {
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Connected Address:</p>
                         <Address address={connectedAddress} />
-                        <p className="text-sm text-gray-600 mt-4 mb-2">Contract Greeting:</p>
-                        <p className="font-mono text-sm bg-base-200 p-2 rounded">{ethereumGreeting || "Loading..."}</p>
                       </div>
                     ) : (
                       <p className="text-gray-500">Not connected</p>
@@ -145,14 +127,6 @@ const Home: NextPage = () => {
                         <p className="font-mono text-sm bg-base-200 p-2 rounded break-all">{activeAccount}</p>
                         <p className="text-sm text-gray-600 mt-4 mb-2">Network:</p>
                         <p className="text-sm">{tronNetwork?.name}</p>
-                        <p className="text-sm text-gray-600 mt-4 mb-2">Contract Greeting:</p>
-                        {tronLoading ? (
-                          <p className="text-sm">Loading...</p>
-                        ) : tronError ? (
-                          <p className="text-sm text-red-500">Error: {tronError}</p>
-                        ) : (
-                          <p className="font-mono text-sm bg-base-200 p-2 rounded">{tronGreeting || "No data"}</p>
-                        )}
                       </div>
                     ) : (
                       <p className="text-gray-500">

@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 
+
+
+
 // Import TronWeb using the correct property (same as other scripts)
 let TronWeb;
+let contractName;
 try {
   const tronWebModule = require("tronweb");
   TronWeb = tronWebModule.TronWeb || tronWebModule.default || tronWebModule;
@@ -17,6 +21,7 @@ try {
 }
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
 
 // Load environment variables from the local .env file
 require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
@@ -43,7 +48,7 @@ const networks = {
   },
 };
 
-async function deployContract(networkName = "shasta") {
+async function deployContract(networkName) {
   const network = networks[networkName];
   if (!network) {
     console.error(`Network ${networkName} not found. Available networks: ${Object.keys(networks).join(", ")}`);
@@ -75,18 +80,53 @@ async function deployContract(networkName = "shasta") {
   });
 
   try {
-    // Get the contract bytecode and ABI from Hardhat artifacts
-    const contractPath = path.join(__dirname, "..", "artifacts", "contracts", "YourContract.sol", "YourContract.json");
+    function askQuestion(query) {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
 
-    if (!fs.existsSync(contractPath)) {
-      console.error("❌ Contract artifacts not found. Please run: yarn hardhat compile");
-      return;
+      return new Promise(resolve => rl.question(query, ans => {
+        rl.close();
+        resolve(ans);
+      }));
     }
 
-    const contractJson = JSON.parse(fs.readFileSync(contractPath, "utf8"));
-    const { abi, bytecode } = contractJson;
+    async function selectContractFile() {
+      const contractsDir = path.join(__dirname, "..", "build", "contracts");
+      const contractFiles = fs.readdirSync(contractsDir).filter(file => file.endsWith(".json"));
 
-    console.log("📝 Contract ABI and bytecode loaded");
+      if (contractFiles.length === 0) {
+        console.error("❌ No compiled contract JSON files found.");
+        process.exit(1);
+      }
+
+      console.log("📦 Available contracts:");
+      contractFiles.forEach((file, index) => {
+        console.log(`  [${index}] ${file}`);
+      });
+
+      const answer = await askQuestion("Select a contract by number: ");
+      const index = parseInt(answer, 10);
+
+      if (isNaN(index) || index < 0 || index >= contractFiles.length) {
+        console.error("❌ Invalid selection.");
+        process.exit(1);
+      }
+
+      const selectedFile = contractFiles[index];
+      contractName = selectedFile.replace(/\.json$/, '');
+      //console.log("Contract Name: " + contractName);
+      const contractPath = path.join(contractsDir, selectedFile);
+      const contractJson = JSON.parse(fs.readFileSync(contractPath, "utf8"));
+      const { abi, bytecode } = contractJson;
+
+      return { abi, bytecode, selectedFile };
+    }
+
+    const { abi, bytecode, selectedFile } = await selectContractFile();
+
+    console.log(`✅ Loaded contract: ${selectedFile}`);
 
     // Get the deployer address
     const address = tronWeb.address.fromPrivateKey(privateKey);
@@ -96,8 +136,12 @@ async function deployContract(networkName = "shasta") {
     const balance = await tronWeb.trx.getBalance(address);
     console.log(`💰 Balance: ${tronWeb.fromSun(balance)} TRX`);
 
-    if (balance < 1000000) {
-      // Less than 1 TRX
+    //Check constructor
+    const constructorArray = abi.constructorArray || [];
+    console.log(`👷‍♂️ Constructor: ${constructorArray}`);
+
+    if (balance < 1000000000) {
+      // Less than 1000 TRX
       console.log("⚠️  Low balance! You might need more TRX for deployment");
     }
 
@@ -107,17 +151,19 @@ async function deployContract(networkName = "shasta") {
     const deployedContract = await contractFactory.new({
       abi: abi,
       bytecode: bytecode,
+      userFeePercentage: 1,
       feeLimit: 1000000000, // 1000 TRX fee limit
       callValue: 0,
-      parameters: [address], // Pass deployer address as constructor parameter
+      parameters: constructorArray, // Pass deployer address as constructor parameter
     });
 
-    console.log("✅ Contract deployed successfully!");
-    console.log(`📍 Contract address: ${deployedContract.address}`);
+    // Converting to base58
+    const base58Address = tronWeb.address.fromHex(deployedContract.address);
 
-    // TronWeb returns the address in base58 format, not hex
-    // We should use it directly without conversion
-    const base58Address = deployedContract.address;
+    console.log("✅ Contract deployed successfully!");
+    console.log(`📍 Contract address: ${base58Address}`);
+
+
 
     // Validate the address format
     const isValidAddress = tronWeb.isAddress(base58Address);
@@ -153,7 +199,7 @@ async function deployContract(networkName = "shasta") {
 }
 
 function updateDeploymentFile(networkName, contractAddress, networkId, tronWeb) {
-  const deploymentsPath = path.join(__dirname, "..", "..", "nextjs", "tron-deployments.json");
+  const deploymentsPath = path.join(__dirname, "..", "..", "tron-deployments.json");
   let deployments = {};
 
   try {
@@ -191,7 +237,8 @@ function updateDeploymentFile(networkName, contractAddress, networkId, tronWeb) 
   console.log(`📍 Storing contract address: ${contractAddress}`);
   console.log(`📍 Base58 address for explorer: ${base58Address}`);
 
-  deployments[networkId].YourContract = {
+
+  deployments[networkId][contractName] = {
     address: contractAddress,
     addressBase58: base58Address,
     network: networkName,

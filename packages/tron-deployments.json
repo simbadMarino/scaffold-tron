@@ -1,7 +1,24 @@
 {
-    "728126428": {},
-    "2494104990": {
-        "YourContract": "THHrvDG92VzpXg2arnYyFC3EZD8DMEdr49"
+  "728126428": {},
+  "2494104990": {},
+  "3448148188": {
+    "TronCellManager": {
+      "address": "TUGoxP8sNVaA5q24hGHXXYVjcmrNavMqBV",
+      "addressBase58": "TUGoxP8sNVaA5q24hGHXXYVjcmrNavMqBV",
+      "network": "nile",
+      "deployedAt": "2025-08-12T17:40:56.464Z"
     },
-    "3448148188": {}
+    "Migrations": {
+      "address": "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
+      "addressBase58": "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
+      "network": "nile",
+      "deployedAt": "2025-08-12T18:35:52.350Z"
+    },
+    "SimpleSmartWallet": {
+      "address": "TFaMRuN6SxeHAtuW26pKrBcVdg5MBXsJbN",
+      "addressBase58": "TFaMRuN6SxeHAtuW26pKrBcVdg5MBXsJbN",
+      "network": "nile",
+      "deployedAt": "2025-08-13T14:25:07.095Z"
+    }
+  }
 }

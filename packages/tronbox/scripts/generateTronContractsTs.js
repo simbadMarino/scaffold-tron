@@ -223,12 +223,11 @@ function getContractAbi(contractName) {
   const artifactPath = path.join(
     __dirname,
     "..",
-    "artifacts",
+    "build",
     "contracts",
-    `${contractName}.sol`,
     `${contractName}.json`,
   );
-
+  console.log(artifactPath);
   if (!fs.existsSync(artifactPath)) {
     console.error(`❌ Contract artifact not found: ${artifactPath}`);
     return null;

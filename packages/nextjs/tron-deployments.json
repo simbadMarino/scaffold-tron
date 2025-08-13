@@ -1,1 +1,22 @@
-{}
+{
+  "3448148188": {
+    "TronCellManager": {
+      "address": "41C8C6837277E7AA13190C1B055C9F33DD7F4BFFE8",
+      "addressBase58": "TDoXZzjkG3uLnuvfQnrDmGao7ZbBe5RPCX",
+      "network": "nile",
+      "deployedAt": "2025-08-12T17:17:57.333Z"
+    },
+    "selectContractFile": {
+      "address": "TYDkq4SWz1ehPDhPauF14zttE3Nd3VEfXT",
+      "addressBase58": "TYDkq4SWz1ehPDhPauF14zttE3Nd3VEfXT",
+      "network": "nile",
+      "deployedAt": "2025-08-12T17:05:13.948Z"
+    },
+    "Migrations": {
+      "address": "TK3sogZrFQuzMVE7c3N5kJkNcZnu2dnSw3",
+      "addressBase58": "TK3sogZrFQuzMVE7c3N5kJkNcZnu2dnSw3",
+      "network": "nile",
+      "deployedAt": "2025-08-12T17:19:52.529Z"
+    }
+  }
+}
