@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon, RssIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 //import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
-//import { useTronReadContract } from "~~/hooks/scaffold-eth/useTronReadContract";
+//import { useTronReadContract } fromTRON "~~/hooks/scaffold-eth/useTronReadContract";
 import scaffoldConfig from "~~/scaffold.config";
 import { useTron } from "~~/services/web3/tronConfig";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
@@ -35,9 +35,8 @@ const Home: NextPage = () => {
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-TRON</span>
-            <span className="block text-sm text-gray-600 mt-2">Build on Scaffold-ETH</span>
+            <span className="block text-4xl font-bold">tronbench</span>
+            <span className="block text-sm text-gray-600 mt-2">Powered by Scaffold</span>
           </h1>
           {shouldShowConnectionStatus && (
             <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
@@ -66,7 +65,7 @@ const Home: NextPage = () => {
               </p>
             </div>
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
+              <MagnifyingGlassIcon className="h-8 w-8 1fill-secondary" />
               <p>
                 Explore your local transactions with the{" "}
                 <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">

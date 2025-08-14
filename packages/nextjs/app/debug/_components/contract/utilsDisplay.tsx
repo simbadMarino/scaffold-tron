@@ -38,6 +38,7 @@ export const displayTxResult = (
       isEthereumAddress = isAddress(displayContent);
     } catch (error) {
       // If viem throws an error, it's not a valid Ethereum address
+      console.log(error);
       isEthereumAddress = false;
     }
 

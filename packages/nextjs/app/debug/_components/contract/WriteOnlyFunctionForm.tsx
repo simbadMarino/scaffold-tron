@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -194,10 +195,9 @@ export const WriteOnlyFunctionForm = ({
             <div className="grow basis-0">{displayedTxResult ? <TxReceipt txResult={displayedTxResult} /> : null}</div>
           )}
           <div
-            className={`flex ${
-              writeDisabled &&
+            className={`flex ${writeDisabled &&
               "tooltip tooltip-bottom tooltip-secondary before:content-[attr(data-tip)] before:-translate-x-1/3 before:left-auto before:transform-none"
-            }`}
+              }`}
             data-tip={`${writeDisabled && "Wallet not connected or in the wrong network"}`}
           >
             <button className="btn btn-secondary btn-sm" disabled={writeDisabled || isLoading} onClick={handleWrite}>

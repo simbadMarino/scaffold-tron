@@ -14,7 +14,7 @@ const selectedContractStorageKey = "scaffoldTron.selectedContract";
 export function DebugContracts() {
   const { activeBlockchain, setActiveBlockchain } = useUnifiedWeb3();
   const contractsData = useUnifiedContracts();
-  const { network, blockchain, explorerUrl } = useActiveNetworkInfo();
+  const { network, explorerUrl } = useActiveNetworkInfo();
   const { ethereumEnabled, tronEnabled } = scaffoldConfig;
 
   const contractNames = useMemo(
@@ -72,6 +72,7 @@ export function DebugContracts() {
         {/* Network Info */}
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <span>Network:</span>
+          <span>Blockchain: {activeBlockchain}</span>
           <span className="font-medium">{network?.name}</span>
           <span>•</span>
           <a href={explorerUrl} target="_blank" rel="noopener noreferrer" className="link link-primary">
@@ -96,8 +97,8 @@ export function DebugContracts() {
               {contractNames.map(contractName => (
                 <button
                   className={`btn btn-secondary btn-sm font-light hover:border-transparent ${contractName === selectedContract
-                      ? "bg-base-300 hover:bg-base-300 no-animation"
-                      : "bg-base-100 hover:bg-secondary"
+                    ? "bg-base-300 hover:bg-base-300 no-animation"
+                    : "bg-base-100 hover:bg-secondary"
                     }`}
                   key={contractName}
                   onClick={() => setSelectedContract(contractName)}

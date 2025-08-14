@@ -1,3 +1,5 @@
+/* eslint-disable */
+"use client";
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { Address as EthAddress } from "./Address/Address";

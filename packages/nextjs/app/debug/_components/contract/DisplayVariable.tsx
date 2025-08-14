@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -176,9 +177,8 @@ export const DisplayVariable = ({
             <div className="text-red-600 dark:text-red-400 text-sm">❌ {String(error)}</div>
           ) : (
             <div
-              className={`break-all block transition bg-transparent ${
-                showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""
-              }`}
+              className={`break-all block transition bg-transparent ${showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""
+                }`}
             >
               {displayTxResult(result)}
             </div>

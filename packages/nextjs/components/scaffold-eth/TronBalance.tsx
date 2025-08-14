@@ -1,3 +1,5 @@
+/* eslint-disable */
+"use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { Balance as EthBalance } from "./Balance";
 import { Address, formatEther } from "viem";

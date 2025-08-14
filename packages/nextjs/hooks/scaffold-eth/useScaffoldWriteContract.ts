@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { MutateOptions } from "@tanstack/react-query";
 import { Abi, ExtractAbiFunctionNames } from "abitype";
@@ -123,13 +124,13 @@ export function useScaffoldWriteContract<TContractName extends ContractName>(
         wagmiContractWrite.writeContractAsync(
           writeContractObject,
           mutateOptions as
-            | MutateOptions<
-                WriteContractReturnType,
-                WriteContractErrorType,
-                WriteContractVariables<Abi, string, any[], Config, number>,
-                unknown
-              >
-            | undefined,
+          | MutateOptions<
+            WriteContractReturnType,
+            WriteContractErrorType,
+            WriteContractVariables<Abi, string, any[], Config, number>,
+            unknown
+          >
+          | undefined,
         );
       const writeTxResult = await writeTx(makeWriteWithParams, { blockConfirmations, onBlockConfirmation });
 
@@ -169,13 +170,13 @@ export function useScaffoldWriteContract<TContractName extends ContractName>(
         ...variables,
       } as WriteContractVariables<Abi, string, any[], Config, number>,
       options as
-        | MutateOptions<
-            WriteContractReturnType,
-            WriteContractErrorType,
-            WriteContractVariables<Abi, string, any[], Config, number>,
-            unknown
-          >
-        | undefined,
+      | MutateOptions<
+        WriteContractReturnType,
+        WriteContractErrorType,
+        WriteContractVariables<Abi, string, any[], Config, number>,
+        unknown
+      >
+      | undefined,
     );
   };
 

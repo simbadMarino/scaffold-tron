@@ -1,3 +1,4 @@
+"use client";
 import { useScaffoldWriteContract } from "./useScaffoldWriteContract";
 import { useTronWriteContract } from "./useTronWriteContract";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";

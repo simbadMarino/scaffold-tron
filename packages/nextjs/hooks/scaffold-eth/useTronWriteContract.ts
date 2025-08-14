@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import deployedTronContracts from "~~/contracts/deployedTronContracts";
 import { useTron } from "~~/services/web3/tronConfig";
