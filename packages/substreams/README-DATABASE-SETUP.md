@@ -6,11 +6,11 @@ This guide shows you how to stream your TRON substreams data into a PostgreSQL d
 
 This setup provides:
 
--   **PostgreSQL Database** for storing TRON transaction data
--   **PostGraphile** for automatic GraphQL API generation
--   **React Components** for querying and displaying transaction data
--   **Contract Address Filtering** for focused data analysis
--   **Real-time Data Streaming** from TRON blockchain
+- **PostgreSQL Database** for storing TRON transaction data
+- **PostGraphile** for automatic GraphQL API generation
+- **React Components** for querying and displaying transaction data
+- **Contract Address Filtering** for focused data analysis
+- **Real-time Data Streaming** from TRON blockchain
 
 ## 📋 Prerequisites
 
@@ -18,19 +18,16 @@ Before starting, ensure you have:
 
 1. **Substreams CLI** installed
 
-    ```bash
-    curl -sSf https://substreams.stream/install | sh
-    ```
-
+   ```bash
+   curl -sSf https://substreams.stream/install | sh
+   ```
 2. **Docker and Docker Compose** installed
 
-    - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-
+   - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 3. **Substreams API Token**
 
-    - Get it from: https://app.streamingfast.io/
-    - Set it as environment variable: `export SUBSTREAMS_API_TOKEN=your_token_here`
-
+   - Get it from: https://app.streamingfast.io/
+   - Set it as environment variable: `export SUBSTREAMS_API_TOKEN=your_token_here`
 4. **Node.js and Yarn** (already set up in Scaffold-ETH 2)
 
 ## 🚀 Quick Start
@@ -51,11 +48,11 @@ docker-compose up -d
 
 This will:
 
--   Start PostgreSQL on port 5432
--   Start PostGraphile GraphQL server on port 5000
--   Create the database schema automatically
--   Enable GraphQL endpoint at `http://localhost:5000/graphql`
--   Enable GraphiQL interface at `http://localhost:5000/graphiql`
+- Start PostgreSQL on port 5432
+- Start PostGraphile GraphQL server on port 5000
+- Create the database schema automatically
+- Enable GraphQL endpoint at `http://localhost:5000/graphql`
+- Enable GraphiQL interface at `http://localhost:5000/graphiql`
 
 ### 2. Build the Substreams
 
@@ -117,19 +114,18 @@ The frontend will be available at `http://localhost:3000`
 
 1. **Navigate to Transactions Page**
 
-    - Visit `http://localhost:3000/substreams`
-    - Or click "Transactions" in the navigation menu
-
+   - Visit `http://localhost:3000/substreams`
+   - Or click "Transactions" in the navigation menu
 2. **Filter by Contract Address**
 
-    - Enter a TRON contract address in the filter field
-    - Click "Filter" to see transactions for that specific contract
-    - Click "Clear" to see all transactions
-
+   - Enter a TRON contract address in the filter field
+   - Click "Filter" to see transactions for that specific contract
+   - Click "Clear" to see all transactions
 3. **View Transaction Details**
-    - Click on transaction hashes to view on TronScan
-    - See formatted timestamps, values, and addresses
-    - Explore contract types and transaction patterns
+
+   - Click on transaction hashes to view on TronScan
+   - See formatted timestamps, values, and addresses
+   - Explore contract types and transaction patterns
 
 ## 🔧 Configuration Options
 
@@ -147,8 +143,8 @@ To use a different database, update the `docker-compose.yml` file or set the `DA
 
 The GraphQL endpoint is available at:
 
--   **GraphQL API**: `http://localhost:5000/graphql`
--   **GraphiQL Interface**: `http://localhost:5000/graphiql`
+- **GraphQL API**: `http://localhost:5000/graphql`
+- **GraphiQL Interface**: `http://localhost:5000/graphiql`
 
 ### Substreams Parameters
 
@@ -156,30 +152,29 @@ You can filter transactions using these parameters:
 
 1. **By Contract Type**:
 
-    ```bash
-    --params filtered_transactions="contract_type:TransferContract"
-    ```
-
+   ```bash
+   --params filtered_transactions="contract_type:TransferContract"
+   ```
 2. **By Contract Address**:
 
-    ```bash
-    --params filtered_transactions="contract_address:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
-    ```
-
+   ```bash
+   --params filtered_transactions="contract_address:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+   ```
 3. **By From Address**:
 
-    ```bash
-    --params filtered_transactions="from:TMAP4Dnyh2og7bzW6HxZfuZqRSTHsVDKRT"
-    ```
-
+   ```bash
+   --params filtered_transactions="from:TMAP4Dnyh2og7bzW6HxZfuZqRSTHsVDKRT"
+   ```
 4. **Complex Filters**:
-    ```bash
-    --params filtered_transactions="(contract_type:TriggerSmartContract && contract_address:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t)"
-    ```
+
+   ```bash
+   --params filtered_transactions="(contract_type:TriggerSmartContract && contract_address:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t)"
+   ```
 
 ## 🗃️ Database Schema
 
 The main `tron_transactions` table includes:
+
 
 | Column             | Type          | Description                                                  |
 | ------------------ | ------------- | ------------------------------------------------------------ |
@@ -267,10 +262,10 @@ To modify the database schema:
 
 1. Edit `schema.sql`
 2. Restart the database:
-    ```bash
-    docker-compose down
-    docker-compose up -d
-    ```
+   ```bash
+   docker-compose down
+   docker-compose up -d
+   ```
 
 ### Custom GraphQL Queries
 
@@ -294,22 +289,21 @@ export const MY_CUSTOM_QUERY = `
 
 1. **Add Database Indexes**:
 
-    ```sql
-    CREATE INDEX idx_custom ON tron_transactions (custom_field);
-    ```
-
+   ```sql
+   CREATE INDEX idx_custom ON tron_transactions (custom_field);
+   ```
 2. **Configure Connection Pooling**:
 
-    ```yaml
-    # In docker-compose.yml
-    environment:
-        - PGBOUNCER_MAX_CLIENT_CONN=100
-    ```
-
+   ```yaml
+   # In docker-compose.yml
+   environment:
+       - PGBOUNCER_MAX_CLIENT_CONN=100
+   ```
 3. **Optimize GraphQL Queries**:
-    - Use `first` and `offset` for pagination
-    - Only select needed fields
-    - Use database functions for complex queries
+
+   - Use `first` and `offset` for pagination
+   - Only select needed fields
+   - Use database functions for complex queries
 
 ## 📈 Monitoring and Debugging
 
@@ -333,9 +327,9 @@ The substreams sink will log progress and any errors during streaming.
 
 Use the GraphiQL interface at `http://localhost:5000/graphiql` to:
 
--   Test queries
--   Browse schema
--   Debug GraphQL issues
+- Test queries
+- Browse schema
+- Debug GraphQL issues
 
 ## 🛠️ Troubleshooting
 
@@ -365,10 +359,10 @@ Use the GraphiQL interface at `http://localhost:5000/graphiql` to:
 
 ## 📚 Resources
 
--   [Substreams Documentation](https://docs.substreams.dev/)
--   [PostGraphile Documentation](https://www.graphile.org/postgraphile/)
--   [URQL Documentation](https://urql.dev/)
--   [TRON Documentation](https://developers.tron.network/)
+- [Substreams Documentation](https://docs.substreams.dev/)
+- [PostGraphile Documentation](https://www.graphile.org/postgraphile/)
+- [URQL Documentation](https://urql.dev/)
+- [TRON Documentation](https://developers.tron.network/)
 
 ## 🤝 Contributing
 

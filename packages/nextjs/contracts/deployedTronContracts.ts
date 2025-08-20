@@ -734,7 +734,7 @@ const deployedTronContracts = {
   // Nile Testnet (chainId: 3448148188)
   3448148188: {
     TronCellManager: {
-      address: "41c8c6837277e40000000000000000000000000000",
+      address: "TUGoxP8sNVaA5q24hGHXXYVjcmrNavMqBV",
       addressBase58: "TUGoxP8sNVaA5q24hGHXXYVjcmrNavMqBV",
       abi: troncellmanagerAbi,
       inheritedFunctions: {},
