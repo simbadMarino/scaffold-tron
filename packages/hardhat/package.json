@@ -1,0 +1,33 @@
+{
+  "name": "@se-2/hardhat",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "hardhat:check-types": "hardhat check-types",
+    "hardhat:clean": "hardhat clean",
+    "hardhat:compile": "hardhat compile",
+    "hardhat:deploy-nile": "hardhat deploy --network nile",
+    "hardhat:deploy-shasta": "hardhat deploy --network shasta",
+    "hardhat:flatten": "hardhat flatten",
+    "hardhat:fork": "hardhat fork",
+    "hardhat:format": "hardhat format",
+    "hardhat:generate": "hardhat generate",
+    "hardhat:hardhat-verify": "hardhat hardhat-verify",
+    "hardhat:test": "hardhat test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@layerzerolabs/hardhat-deploy": "^0.11.45-lz.4",
+    "@layerzerolabs/hardhat-tron": "^3.0.124",
+    "dotenv": "^17.2.1",
+    "hardhat": "^2.26.3",
+    "hardhat-deploy": "^0.12.4"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0"
+  }
+}
