@@ -3,10 +3,10 @@
   "2494104990": {},
   "3448148188": {
     "TronCellManager": {
-      "address": "TUGoxP8sNVaA5q24hGHXXYVjcmrNavMqBV",
-      "addressBase58": "TUGoxP8sNVaA5q24hGHXXYVjcmrNavMqBV",
+      "address": "TV1NdEetSNbRb7N9GxmHiWwAWxpMQ1E2uQ",
+      "addressBase58": "TV1NdEetSNbRb7N9GxmHiWwAWxpMQ1E2uQ",
       "network": "nile",
-      "deployedAt": "2025-08-12T17:40:56.464Z"
+      "deployedAt": "2025-08-20T14:21:05.407Z"
     },
     "Migrations": {
       "address": "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",

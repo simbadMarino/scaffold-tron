@@ -298,7 +298,7 @@ const ${contractName.toLowerCase()}Abi = ${JSON.stringify(abi, null, 2)} as cons
       }
 
       networkDeployments += `    ${contractName}: {\n`;
-      networkDeployments += `      address: "${hexAddress}",\n`;
+      networkDeployments += `      address: "${base58Address}",\n`;
 
       // Always include addressBase58 if we have a valid base58 address and it's different from hex
       if (base58Address && base58Address !== hexAddress && base58Address.startsWith("T")) {

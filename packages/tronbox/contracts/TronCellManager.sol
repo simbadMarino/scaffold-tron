@@ -97,9 +97,9 @@ contract TronCellManager {
         uint amountInTRX;
         unchecked {
             if (resourceType == 1) {
-                amountInTRX = amountInRes * energyPerTRX;
+                amountInTRX = (amountInRes * 1_000_000_000_000) / energyPerTRX;
             } else if (resourceType == 0) {
-                amountInTRX = amountInRes * netPerTRX;
+                amountInTRX = (amountInRes * 1_000_000_000_000) / netPerTRX;
             }
         }
 
