@@ -4,7 +4,7 @@ import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
-export const metadata = getMetadata({ title: "tronbench", description: "Powered by Scaffold ETH" });
+export const metadata = getMetadata({ title: "proto-tron", description: "TRON Scaffolding & Prototyping" });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (

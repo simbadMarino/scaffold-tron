@@ -15,7 +15,7 @@ module.exports = {
       userFeePercentage: 30,
       feeLimit: 1000 * 1e6,
       fullHost: "http://127.0.0.1:9090",
-      network_id: "*",
+      network_id: "4",
     },
     shasta: {
       // Tron Testnet

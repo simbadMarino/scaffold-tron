@@ -7,6 +7,7 @@
     "tron:deploy:nile": "node scripts/deployTronContract.js nile",
     "tron:deploy:testnet": "node scripts/deployTronContract.js shasta",
     "tron:deploy:mainnet": "node scripts/deployTronContract.js mainnet",
+    "tron:deploy:dev": "node scripts/deployTronContract.js dev",
     "tron:test": "node scripts/testTronWeb.js",
     "tron:console": "tronbox console",
     "tron:generate": "node scripts/generateTronContractsTs.js",

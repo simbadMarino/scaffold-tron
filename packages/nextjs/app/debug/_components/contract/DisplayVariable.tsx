@@ -1,19 +1,18 @@
-/* eslint-disable */
 "use client";
+import TronWeb from 'tronweb'; // ES Module style
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { displayTxResult } from "./utilsDisplay";
 import { Abi, AbiFunction } from "abitype";
 import { Address } from "viem";
 import { useReadContract } from "wagmi";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import deployedTronContracts from "~~/contracts/deployedTronContracts";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useTron } from "~~/services/web3/tronConfig";
-import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
+import { ChainId } from '@uniswap/sdk-core';
+import { tronMainnet, tronNile, tronShasta, tronLocal } from "~~/utils/scaffold-eth/networks";
 
 type DisplayVariableProps = {
   contractAddress: Address;
@@ -30,19 +29,13 @@ export const DisplayVariable = ({
   abi,
   inheritedFrom,
 }: DisplayVariableProps) => {
-  const { activeBlockchain } = useUnifiedWeb3();
   const { targetNetwork } = useTargetNetwork();
-  const { tronWeb, network: tronNetwork, isConnected, account, connect } = useTron();
-  const [tronResult, setTronResult] = useState<any>(undefined);
-  const [isTronLoading, setIsTronLoading] = useState(false);
-  const [tronError, setTronError] = useState<string | null>(null);
 
-  // For Ethereum contracts
   const {
-    data: ethereumResult,
-    isFetching: isEthereumFetching,
-    refetch: refetchEthereum,
-    error: ethereumError,
+    data: result,
+    isFetching,
+    refetch,
+    error,
   } = useReadContract({
     address: contractAddress,
     functionName: abiFunction.name,
@@ -50,107 +43,34 @@ export const DisplayVariable = ({
     chainId: targetNetwork.id,
     query: {
       retry: false,
-      enabled: activeBlockchain === "ethereum",
     },
   });
 
-  // Determine the result and loading state based on active blockchain
-  const result = activeBlockchain === "ethereum" ? ethereumResult : tronResult;
-  const isFetching = activeBlockchain === "ethereum" ? isEthereumFetching : isTronLoading;
-  const error = activeBlockchain === "ethereum" ? ethereumError : tronError;
+  console.log("contractaddy: " + contractAddress)
+  console.log("ChainID: " + targetNetwork.id);
 
   const { showAnimation } = useAnimationConfig(result);
 
-  // Function to read from Tron contract
-  const readTronContract = async () => {
-    if (!tronWeb || !tronNetwork) {
-      setTronError("TronWeb not connected");
-      return;
-    }
-
-    // Check if wallet is connected
-    if (!isConnected || !account?.address) {
-      setTronError("Please connect your TronLink wallet to read contract data");
-      return;
-    }
-
-    try {
-      setIsTronLoading(true);
-      setTronError(null);
-
-      // Get the actual Tron address from deployedTronContracts
-      const tronContracts = (deployedTronContracts as any)[tronNetwork.id];
-      let tronAddress = contractAddress;
-
-      if (tronContracts) {
-        for (const [contractName, contractData] of Object.entries(tronContracts)) {
-          if ((contractData as any).address) {
-            // Use base58 address for TronWeb interactions
-            tronAddress = (contractData as any).addressBase58 || (contractData as any).address;
-            break;
-          }
-        }
-      }
-
-      if (!tronAddress) {
-        throw new Error("Tron contract address not found");
-      }
-
-      // Ensure TronWeb has the wallet address set
-      if (window.tronWeb && window.tronWeb.ready) {
-        // Use window.tronWeb (from TronLink) for contract calls
-        const contract = await window.tronWeb.contract().at(tronAddress);
-        const data = await contract[abiFunction.name]().call();
-        setTronResult(data);
-      } else {
-        throw new Error("TronLink wallet not properly connected");
-      }
-    } catch (err: any) {
-      console.error("Error reading Tron contract:", err);
-      const errorMessage = err.message || "Failed to read contract";
-
-      // Provide helpful error messages
-      if (errorMessage.includes("owner_address")) {
-        setTronError("Please connect your TronLink wallet to read contract data");
-      } else if (errorMessage.includes("TronLink")) {
-        setTronError("TronLink wallet not detected. Please install TronLink extension");
-      } else {
-        setTronError(errorMessage);
-      }
-    } finally {
-      setIsTronLoading(false);
-    }
-  };
-
-  // Refetch function that handles both blockchains
-  const refetch = async () => {
-    if (activeBlockchain === "ethereum") {
-      await refetchEthereum();
-    } else {
-      await readTronContract();
-    }
-  };
-
   useEffect(() => {
-    if (activeBlockchain === "tron") {
-      readTronContract();
-    } else {
-      refetchEthereum();
-    }
-  }, [refreshDisplayVariables, activeBlockchain]);
+    refetch();
+  }, [refetch, refreshDisplayVariables]);
 
   useEffect(() => {
     if (error) {
-      const parsedError = activeBlockchain === "ethereum" ? getParsedError(error) : (error as string);
+      const parsedError = getParsedError(error);
       notification.error(parsedError);
     }
-  }, [error, activeBlockchain]);
+  }, [error]);
+
+
+
+
 
   return (
     <div className="space-y-1 pb-2">
       <div className="flex items-center">
         <h3 className="font-medium text-lg mb-0 break-all">{abiFunction.name}</h3>
-        <button className="btn btn-ghost btn-xs" onClick={refetch}>
+        <button className="btn btn-ghost btn-xs" onClick={async () => await refetch()}>
           {isFetching ? (
             <span className="loading loading-spinner loading-xs"></span>
           ) : (
@@ -161,28 +81,12 @@ export const DisplayVariable = ({
       </div>
       <div className="text-base-content/80 flex flex-col items-start">
         <div>
-          {activeBlockchain === "tron" && !isConnected ? (
-            <div className="flex flex-col items-start space-y-2">
-              <div className="text-orange-600 dark:text-orange-400 text-sm">🔒 TronLink wallet connection required</div>
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={async () => {
-                  await connect();
-                }}
-              >
-                Connect TronLink
-              </button>
-            </div>
-          ) : error ? (
-            <div className="text-red-600 dark:text-red-400 text-sm">❌ {String(error)}</div>
-          ) : (
-            <div
-              className={`break-all block transition bg-transparent ${showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""
-                }`}
-            >
-              {displayTxResult(result)}
-            </div>
-          )}
+          <div
+            className={`break-all block transition bg-transparent ${showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""
+              }`}
+          >
+            {displayTxResult(result)}
+          </div>
         </div>
       </div>
     </div>

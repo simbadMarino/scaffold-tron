@@ -44,6 +44,7 @@
         "tron:deploy:shasta": "yarn workspace @se-2/tronbox tron:deploy:shasta",
         "tron:deploy:nile": "yarn workspace @se-2/tronbox tron:deploy:nile",
         "tron:deploy:testnet": "yarn workspace @se-2/tronbox tron:deploy:testnet",
+        "tron:deploy:dev": "yarn workspace @se-2/tronbox tron:deploy:dev",
         "tron:test": "yarn workspace @se-2/tronbox tron:test",
         "generate:tron-contracts": "yarn workspace @se-2/tronbox tron:generate",
         "substreams:cleandb": "cd packages/substreams && node scripts/clean-db.js",

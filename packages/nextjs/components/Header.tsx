@@ -163,8 +163,8 @@ export const Header = () => {
             <Image alt="Scaffold-TRON logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">tronbench</span>
-            <span className="text-xs">powered by Scaffold</span>
+            <span className="font-bold leading-tight">proto-tron</span>
+            <span className="text-xs">TRON Scaffold</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">

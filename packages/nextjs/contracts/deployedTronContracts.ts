@@ -25,6 +25,27 @@ const troncellmanagerAbi = [
   },
   {
     "inputs": [],
+    "name": "AccessControlBadConfirmation",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "neededRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "AccessControlUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidAmountOrPriceNotInitialized",
     "type": "error"
   },
@@ -43,6 +64,32 @@ const troncellmanagerAbi = [
     "inputs": [],
     "name": "UnDelegateCallFailed",
     "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "AddressAdminGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "AddressDelegatorGranted",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -86,6 +133,12 @@ const troncellmanagerAbi = [
       }
     ],
     "name": "BalanceUnfreezedV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "DestroyContract",
     "type": "event"
   },
   {
@@ -193,6 +246,81 @@ const troncellmanagerAbi = [
     "inputs": [
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "previousAdminRole",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "newAdminRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RoleAdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "from",
         "type": "address"
@@ -234,6 +362,45 @@ const troncellmanagerAbi = [
   },
   {
     "inputs": [],
+    "name": "ADMIN",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DELEGATOR",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "calculateEnergyPerTRX",
     "outputs": [
       {
@@ -268,19 +435,6 @@ const troncellmanagerAbi = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_newOwnerAddress",
-        "type": "address"
-      }
-    ],
-    "name": "changeOwner",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "amountInRes",
         "type": "uint256"
@@ -297,6 +451,19 @@ const troncellmanagerAbi = [
       }
     ],
     "name": "delegateResource",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "name": "destroyContract",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -330,6 +497,39 @@ const troncellmanagerAbi = [
     "name": "freezeBalance",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getChainParameters",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -385,6 +585,25 @@ const troncellmanagerAbi = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -463,6 +682,74 @@ const troncellmanagerAbi = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "grantRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "hasRole",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "makeUserAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "makeUserDelegator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "netPerTRX",
     "outputs": [
@@ -496,6 +783,19 @@ const troncellmanagerAbi = [
         "type": "address"
       }
     ],
+    "name": "quickBandwidthDelegation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "delegateTo",
+        "type": "address"
+      }
+    ],
     "name": "quickEnergyDelegation",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -504,8 +804,89 @@ const troncellmanagerAbi = [
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "callerConfirmation",
+        "type": "address"
+      }
+    ],
+    "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeDelegator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "amountInRes",
         "type": "uint256"
       },
       {
@@ -732,12 +1113,18 @@ const deployedTronContracts = {
   },
   // Shasta Testnet (chainId: 2494104990)
   2494104990: {
+    TronCellManager: {
+      address: "TBjPbMrB7ZkPR1zgnwKDF4B4ZDb7Tt8Gua",
+      addressBase58: "TBjPbMrB7ZkPR1zgnwKDF4B4ZDb7Tt8Gua",
+      abi: troncellmanagerAbi,
+      inheritedFunctions: {},
+    },
   },
   // Nile Testnet (chainId: 3448148188)
   3448148188: {
     TronCellManager: {
-      address: "TV1NdEetSNbRb7N9GxmHiWwAWxpMQ1E2uQ",
-      addressBase58: "TV1NdEetSNbRb7N9GxmHiWwAWxpMQ1E2uQ",
+      address: "TEY1QiJxXb88U1HsUVr5NdhioRCR6ssc4j",
+      addressBase58: "TEY1QiJxXb88U1HsUVr5NdhioRCR6ssc4j",
       abi: troncellmanagerAbi,
       inheritedFunctions: {},
     },
@@ -748,8 +1135,8 @@ const deployedTronContracts = {
       inheritedFunctions: {},
     },
     SimpleSmartWallet: {
-      address: "TFaMRuN6SxeHAtuW26pKrBcVdg5MBXsJbN",
-      addressBase58: "TFaMRuN6SxeHAtuW26pKrBcVdg5MBXsJbN",
+      address: "TDRQLtuWT2ULpmzfHzKvFQBNTDWkCbM3d7",
+      addressBase58: "TDRQLtuWT2ULpmzfHzKvFQBNTDWkCbM3d7",
       abi: simplesmartwalletAbi,
       inheritedFunctions: {},
     },

@@ -28,6 +28,12 @@ require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
 
 // Tron network configurations
 const networks = {
+  dev: {
+    fullHost: "http://127.0.0.1:9090",
+    solidityNode: "http://127.0.0.1:9090",
+    eventServer: "http://127.0.0.1:9090",
+    network_id: 9999999999,
+  },
   shasta: {
     fullHost: "https://api.shasta.trongrid.io",
     solidityNode: "https://api.shasta.trongrid.io",

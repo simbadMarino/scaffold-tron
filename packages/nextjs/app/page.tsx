@@ -35,7 +35,7 @@ const Home: NextPage = () => {
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center">
-            <span className="block text-4xl font-bold">tronbench</span>
+            <span className="block text-4xl font-bold">proto-tron</span>
             <span className="block text-sm text-gray-600 mt-2">Powered by Scaffold</span>
           </h1>
           {shouldShowConnectionStatus && (
