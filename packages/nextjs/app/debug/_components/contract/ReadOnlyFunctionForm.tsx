@@ -39,7 +39,7 @@ export const ReadOnlyFunctionForm = ({
   const [isManualLoading, setIsManualLoading] = useState(false);
 
   const { activeBlockchain } = useUnifiedWeb3();
-  const { tronWeb, network: tronNetwork } = useTron(); // ✅ Destructure once at top level
+  const { tronWeb, network: tronNetwork } = useTron();
   const { targetNetwork } = useTargetNetwork();
 
   // For Ethereum contracts

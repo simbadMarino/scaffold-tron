@@ -1,5 +1,5 @@
 "use client";
-import TronWeb from 'tronweb'; // ES Module style
+
 
 import { useEffect } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
@@ -13,6 +13,7 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 import { ChainId } from '@uniswap/sdk-core';
 import { tronMainnet, tronNile, tronShasta, tronLocal } from "~~/utils/scaffold-eth/networks";
+import { useTron } from "~~/services/web3/tronConfig";
 
 type DisplayVariableProps = {
   contractAddress: Address;
@@ -22,6 +23,14 @@ type DisplayVariableProps = {
   abi: Abi;
 };
 
+function tronHexToEthAddress(tronHex: string) {
+  // TRON addresses start with "41" for mainnet
+  if (tronHex.startsWith("41") && tronHex.length === 42) {
+    return "0x" + tronHex.slice(2);
+  }
+  return tronHex; // fallback
+}
+
 export const DisplayVariable = ({
   contractAddress,
   abiFunction,
@@ -30,6 +39,7 @@ export const DisplayVariable = ({
   inheritedFrom,
 }: DisplayVariableProps) => {
   const { targetNetwork } = useTargetNetwork();
+  const { tronWeb, network: tronNetwork } = useTron();
 
   const {
     data: result,
@@ -37,7 +47,7 @@ export const DisplayVariable = ({
     refetch,
     error,
   } = useReadContract({
-    address: contractAddress,
+    address: tronHexToEthAddress(tronWeb.address.toHex(contractAddress)),
     functionName: abiFunction.name,
     abi: abi,
     chainId: targetNetwork.id,
