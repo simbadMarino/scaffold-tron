@@ -216,7 +216,7 @@ const troncellmanagerAbi = [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "delegateTo",
+        "name": "unDelegateTo",
         "type": "address"
       },
       {
@@ -896,7 +896,7 @@ const troncellmanagerAbi = [
       },
       {
         "internalType": "address payable",
-        "name": "delegateTo",
+        "name": "unDelegateTo",
         "type": "address"
       }
     ],
@@ -976,49 +976,6 @@ const troncellmanagerAbi = [
         "type": "uint256"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-] as const;
-
-// Migrations ABI
-const migrationsAbi = [
-  {
-    "inputs": [],
-    "name": "last_completed_migration",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "completed",
-        "type": "uint256"
-      }
-    ],
-    "name": "setCompleted",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }
@@ -1107,6 +1064,49 @@ const simplesmartwalletAbi = [
   }
 ] as const;
 
+// Migrations ABI
+const migrationsAbi = [
+  {
+    "inputs": [],
+    "name": "last_completed_migration",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "completed",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCompleted",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+] as const;
+
 const deployedTronContracts = {
   // Tron Mainnet (chainId: 728126428)
   728126428: {
@@ -1114,9 +1114,15 @@ const deployedTronContracts = {
   // Shasta Testnet (chainId: 2494104990)
   2494104990: {
     TronCellManager: {
-      address: "TBjPbMrB7ZkPR1zgnwKDF4B4ZDb7Tt8Gua",
-      addressBase58: "TBjPbMrB7ZkPR1zgnwKDF4B4ZDb7Tt8Gua",
+      address: "TTGkAPhXbj3uzGrgPH6vH7U3HbRzGqdY1M",
+      addressBase58: "TTGkAPhXbj3uzGrgPH6vH7U3HbRzGqdY1M",
       abi: troncellmanagerAbi,
+      inheritedFunctions: {},
+    },
+    SimpleSmartWallet: {
+      address: "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
+      addressBase58: "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
+      abi: simplesmartwalletAbi,
       inheritedFunctions: {},
     },
   },

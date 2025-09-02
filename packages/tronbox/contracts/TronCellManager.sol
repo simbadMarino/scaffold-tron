@@ -62,7 +62,7 @@ contract TronCellManager is AccessControl {
     );
     event ResourceUnDelegated(
         address indexed caller,
-        address indexed delegateTo,
+        address indexed unDelegateTo,
         uint256 amount,
         uint8 resourceType,
         uint256 timestamp
@@ -128,10 +128,16 @@ contract TronCellManager is AccessControl {
         emit ResourceDelegated(msg.sender, delegateTo, amountInRes, resourceType, block.timestamp);
     }
 
+    /**
+     * @notice Undelegate Resource in Resource units
+     * @param amountInRes Amount of resource to be delegated
+     * @param resourceType Energy: 1  Bandwidth: 0
+     * @param unDelegateTo to address
+     */
     function unDelegateResource(
         uint256 amountInRes,
         uint8 resourceType, //Energy: 1 , Bandwidth: 0
-        address payable delegateTo
+        address payable unDelegateTo
     ) public onlyRole(DELEGATOR) {
         if (amountInRes == 0 && energyPerTRX == 0 && netPerTRX == 0) revert InvalidAmountOrPriceNotInitialized();
         if (resourceType > 1) revert InvalidResourceType(resourceType); //If Wrong input by user revert
@@ -142,8 +148,8 @@ contract TronCellManager is AccessControl {
         } else if (resourceType == 0) {
             amountInTRX = (amountInRes * 1_000_000_000_000) / netPerTRX;
         }
-        delegateTo.unDelegateResource(amountInTRX, resourceType);
-        emit ResourceUnDelegated(msg.sender, delegateTo, amountInRes, resourceType, block.timestamp);
+        unDelegateTo.unDelegateResource(amountInTRX, resourceType);
+        emit ResourceUnDelegated(msg.sender, unDelegateTo, amountInRes, resourceType, block.timestamp);
     }
 
     function quickEnergyDelegation(address payable delegateTo) external onlyRole(DELEGATOR) {
