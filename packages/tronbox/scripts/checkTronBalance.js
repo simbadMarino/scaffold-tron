@@ -67,9 +67,18 @@ async function checkTronBalance() {
 
       // Get balance
       const balance = await tronWeb.trx.getBalance(address);
+      const accountResources = await tronWeb.trx.getAccountResources(address);
       const balanceInTrx = tronWeb.fromSun(balance);
-
+      const energyLimit = accountResources.EnergyLimit != undefined ? accountResources.EnergyLimit : 0;
+      const energyUsed = accountResources.EnergyUsed !== undefined ? accountResources.EnergyUsed : 0;
+      const availableEnergy = energyLimit - energyUsed;
+      const bandwidthLimit = (accountResources.freeNetLimit != undefined ? accountResources.freeNetLimit : 0) + (accountResources.NetLimit != undefined ? accountResources.NetLimit : 0);
+      const bandwidthUsed = accountResources.NetUsed != undefined ? accountResources.NetUsed : 0;
+      const availableBandwidth = bandwidthLimit - bandwidthUsed;
       console.log(`💰 Balance: ${balanceInTrx} TRX`);
+      console.log(`🔋 Energy: ${availableEnergy} / ${energyLimit}`);
+      console.log(`⛙ Bandwidth: ${availableBandwidth} / ${bandwidthLimit}`);
+      console.log("net:" + accountResources.NetLimit);
 
       if (parseFloat(balanceInTrx) === 0) {
         console.log("⚠️  No balance found!");
