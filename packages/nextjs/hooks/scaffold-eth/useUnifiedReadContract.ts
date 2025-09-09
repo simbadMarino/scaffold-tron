@@ -1,3 +1,4 @@
+"use client";
 import { useScaffoldReadContract } from "./useScaffoldReadContract";
 import { useTronReadContract } from "./useTronReadContract";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";

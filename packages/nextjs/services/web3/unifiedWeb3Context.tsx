@@ -3,6 +3,7 @@
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useTron } from "./tronConfig";
 import { useAccount, useChainId } from "wagmi";
+import scaffoldConfig from "~~/scaffold.config";
 
 export type BlockchainType = "ethereum" | "tron";
 
@@ -42,8 +43,22 @@ export const useUnifiedWeb3 = () => {
   return context;
 };
 
+// Get the initial blockchain based on configuration
+const getInitialBlockchain = (): BlockchainType => {
+  const { ethereumEnabled, tronEnabled } = scaffoldConfig;
+
+  if (ethereumEnabled && !tronEnabled) {
+    return "ethereum";
+  } else if (!ethereumEnabled && tronEnabled) {
+    return "tron";
+  } else {
+    // Both enabled or both disabled - default to ethereum
+    return "ethereum";
+  }
+};
+
 export const UnifiedWeb3Provider = ({ children }: { children: ReactNode }) => {
-  const [activeBlockchain, setActiveBlockchain] = useState<BlockchainType>("ethereum");
+  const [activeBlockchain, setActiveBlockchain] = useState<BlockchainType>(getInitialBlockchain());
 
   // Ethereum hooks
   const { address: ethereumAddress, isConnected: ethereumConnected } = useAccount();
@@ -58,6 +73,20 @@ export const UnifiedWeb3Provider = ({ children }: { children: ReactNode }) => {
     disconnect: disconnectTron,
     switchNetwork: switchTronNetwork,
   } = useTron();
+
+  // Enhanced setActiveBlockchain that respects configuration
+  const handleSetActiveBlockchain = (blockchain: BlockchainType) => {
+    const { ethereumEnabled, tronEnabled } = scaffoldConfig;
+
+    // Only allow switching to enabled blockchains
+    if (blockchain === "ethereum" && ethereumEnabled) {
+      setActiveBlockchain("ethereum");
+    } else if (blockchain === "tron" && tronEnabled) {
+      setActiveBlockchain("tron");
+    } else {
+      console.warn(`Cannot switch to ${blockchain} - it is not enabled in configuration`);
+    }
+  };
 
   // Unified getters
   const activeAccount = activeBlockchain === "ethereum" ? ethereumAddress : tronAccount?.address;
@@ -94,7 +123,7 @@ export const UnifiedWeb3Provider = ({ children }: { children: ReactNode }) => {
 
   const value: UnifiedWeb3ContextType = {
     activeBlockchain,
-    setActiveBlockchain,
+    setActiveBlockchain: handleSetActiveBlockchain,
 
     // Ethereum data
     ethereumAccount: ethereumAddress,

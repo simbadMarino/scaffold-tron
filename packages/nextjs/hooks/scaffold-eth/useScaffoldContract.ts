@@ -1,3 +1,4 @@
+"use client";
 import { Account, Address, Chain, Client, Transport, getContract } from "viem";
 import { usePublicClient } from "wagmi";
 import { GetWalletClientReturnType } from "wagmi/actions";
@@ -41,11 +42,11 @@ export const useScaffoldContract = <
       Address,
       Contract<TContractName>["abi"],
       TWalletClient extends Exclude<GetWalletClientReturnType, null>
-        ? {
-            public: Client<Transport, Chain>;
-            wallet: TWalletClient;
-          }
-        : { public: Client<Transport, Chain> },
+      ? {
+        public: Client<Transport, Chain>;
+        wallet: TWalletClient;
+      }
+      : { public: Client<Transport, Chain> },
       Chain,
       Account
     >({

@@ -33,14 +33,10 @@ This guide will help you deploy your contracts to Tron testnets and update your 
 
 ### Set Environment Variable
 
+Create a `.env.local` file in the `packages/nextjs` directory:
+
 ```bash
-export TRON_PRIVATE_KEY="your_private_key_here"
-```
-
-Or create a `.env.local` file in the `packages/nextjs` directory:
-
-```
-TRON_PRIVATE_KEY=your_private_key_here
+cp .env.example .env
 ```
 
 ## Step 3: Compile Your Contract
@@ -48,8 +44,7 @@ TRON_PRIVATE_KEY=your_private_key_here
 Make sure your contract is compiled:
 
 ```bash
-cd packages/hardhat
-yarn hardhat compile
+yarn tron:compile #from root dir
 ```
 
 ## Step 4: Deploy to Tron Testnet
@@ -71,19 +66,38 @@ yarn tron:deploy:nile
 ### Expected Output
 
 ```
-🚀 Deploying to shasta...
-📝 Contract ABI and bytecode loaded
-👤 Deployer address: TYourTronAddress...
-💰 Balance: 9999.5 TRX
+🚀 Deploying to nile...
+📦 Available contracts:
+  [0] Migrations.json
+  [1] TronCellManager.json
+Select a contract by number: 0
+✅ Loaded contract: Migrations.json
+👤 Deployer address: TPxe5NN49YEGFNpDQZUXpViJ8B4c2BmL7f
+💰 Balance: 1749.4994 TRX
+👷‍♂️ Constructor: 
 🔧 Deploying contract...
 ✅ Contract deployed successfully!
-📍 Contract address: TContractAddress...
-🔗 View on explorer: https://shasta.tronscan.org/#/address/TContractAddress...
-📄 Updated deployments file: tron-deployments.json
-🔄 Run: yarn generate:tron-contracts to update the frontend
+📍 Contract address: TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h
+📍 Address validation: true
+📍 Address format: base58
+🔗 View on explorer: https://nile.tronscan.org/#/contract/TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h
+📍 Address already in base58 format: TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h
+📍 Storing contract address: TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h
+📍 Base58 address for explorer: TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h
+📄 Updated deployments file:
+🔄 Generating TypeScript contracts file...
+
+✅ Generated deployedTronContracts.ts
+📍 Found 2 contract type(s)
+   Tron Mainnet: 0 contract(s)
+   Shasta Testnet: 0 contract(s)
+   Nile Testnet: 2 contract(s)
+✅ TypeScript contracts file updated!
 ```
 
-## Step 5: Update Frontend Configuration
+## Step 5: Update Frontend Configuration (Optional, only if manual updates are necesary)
+
+⚠️ This step is done automatically on Step 4, proceed only if manual udpates are necesary
 
 After successful deployment, update your frontend:
 
@@ -156,6 +170,7 @@ const deployedTronContracts = {
 - Verify the contract address in `tron-deployments.json`
 
 ## Network Information
+
 
 | Network | Chain ID   | RPC URL                        | Explorer                    |
 | ------- | ---------- | ------------------------------ | --------------------------- |

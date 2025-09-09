@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+    postgres:
+        image: postgres:15-alpine
+        environment:
+            POSTGRES_DB: tron_transactions
+            POSTGRES_USER: tron_user
+            POSTGRES_PASSWORD: tron_password
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+            - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U tron_user -d tron_transactions"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    postgraphile:
+        image: graphile/postgraphile:4.13.0
+        depends_on:
+            postgres:
+                condition: service_healthy
+        environment:
+            DATABASE_URL: postgres://tron_user:tron_password@postgres:5432/tron_transactions
+        ports:
+            - "5001:5000"
+        command:
+            [
+                "--connection",
+                "postgres://tron_user:tron_password@postgres:5432/tron_transactions",
+                "--port",
+                "5000",
+                "--schema",
+                "public",
+                "--dynamic-json",
+                "--no-setof-functions-contain-nulls",
+                "--no-ignore-rbac",
+                "--no-ignore-indexes",
+                "--show-error-stack=json",
+                "--extended-errors",
+                "hint,detail,errcode",
+                "--graphiql",
+                "/graphiql",
+                "--enhance-graphiql",
+                "--allow-explain",
+                "--enable-query-batching",
+                "--legacy-relations",
+                "omit",
+                "--cors",
+                "--body-size-limit",
+                "100MB",
+            ]
+        volumes:
+            - ./generated:/tmp
+
+volumes:
+    postgres_data:

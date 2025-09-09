@@ -1,7 +1,7 @@
 import { ReactElement, useState } from "react";
 import { TransactionBase, TransactionReceipt, formatEther, isAddress, isHex } from "viem";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
-import { UnifiedAddress } from "~~/components/scaffold-eth/UnifiedAddress";
+import { TronAddress } from "~~/components/scaffold-eth/TronAddress";
 import { replacer } from "~~/utils/scaffold-eth/common";
 
 type DisplayContent =
@@ -38,11 +38,12 @@ export const displayTxResult = (
       isEthereumAddress = isAddress(displayContent);
     } catch (error) {
       // If viem throws an error, it's not a valid Ethereum address
+      console.log(error);
       isEthereumAddress = false;
     }
 
     if (isEthereumAddress || isTronAddress) {
-      return <UnifiedAddress address={displayContent} size={fontSize} onlyEnsOrAddress />;
+      return <TronAddress address={displayContent} size={fontSize} onlyEnsOrAddress />;
     }
 
     if (isHex(displayContent)) {

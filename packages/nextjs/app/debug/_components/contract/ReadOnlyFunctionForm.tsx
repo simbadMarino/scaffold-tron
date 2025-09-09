@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -36,8 +37,9 @@ export const ReadOnlyFunctionForm = ({
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [result, setResult] = useState<unknown>();
   const [isManualLoading, setIsManualLoading] = useState(false);
+
   const { activeBlockchain } = useUnifiedWeb3();
-  const { tronWeb } = useTron();
+  const { tronWeb, network: tronNetwork } = useTron();
   const { targetNetwork } = useTargetNetwork();
 
   // For Ethereum contracts
@@ -107,16 +109,15 @@ export const ReadOnlyFunctionForm = ({
               try {
                 setIsManualLoading(true);
                 if (tronWeb && contractAddress) {
-                  // Get the actual Tron address from deployedTronContracts
-                  const { network: tronNetwork } = useTron();
                   const tronContracts = (deployedTronContracts as any)[tronNetwork?.id || 0];
 
-                  // Find the contract name by searching for the address (though this is a bit hacky)
+                  // Find the contract address from deployed contracts
                   let tronAddress = contractAddress;
                   if (tronContracts) {
-                    for (const [contractName, contractData] of Object.entries(tronContracts)) {
+                    for (const [_, contractData] of Object.entries(tronContracts)) {
                       if ((contractData as any).address) {
-                        tronAddress = (contractData as any).address;
+                        tronAddress =
+                          (contractData as any).addressBase58 || (contractData as any).address;
                         break;
                       }
                     }

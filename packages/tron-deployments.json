@@ -1,7 +1,37 @@
 {
-    "728126428": {},
-    "2494104990": {
-        "YourContract": "THHrvDG92VzpXg2arnYyFC3EZD8DMEdr49"
+  "728126428": {},
+  "2494104990": {
+    "TronCellManager": {
+      "address": "TTGkAPhXbj3uzGrgPH6vH7U3HbRzGqdY1M",
+      "addressBase58": "TTGkAPhXbj3uzGrgPH6vH7U3HbRzGqdY1M",
+      "network": "shasta",
+      "deployedAt": "2025-08-31T03:27:48.746Z"
     },
-    "3448148188": {}
+    "SimpleSmartWallet": {
+      "address": "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
+      "addressBase58": "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
+      "network": "shasta",
+      "deployedAt": "2025-08-30T06:49:08.751Z"
+    }
+  },
+  "3448148188": {
+    "TronCellManager": {
+      "address": "TEY1QiJxXb88U1HsUVr5NdhioRCR6ssc4j",
+      "addressBase58": "TEY1QiJxXb88U1HsUVr5NdhioRCR6ssc4j",
+      "network": "nile",
+      "deployedAt": "2025-08-24T00:32:37.578Z"
+    },
+    "Migrations": {
+      "address": "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
+      "addressBase58": "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
+      "network": "nile",
+      "deployedAt": "2025-08-12T18:35:52.350Z"
+    },
+    "SimpleSmartWallet": {
+      "address": "TDRQLtuWT2ULpmzfHzKvFQBNTDWkCbM3d7",
+      "addressBase58": "TDRQLtuWT2ULpmzfHzKvFQBNTDWkCbM3d7",
+      "network": "nile",
+      "deployedAt": "2025-08-24T00:33:05.887Z"
+    }
+  }
 }

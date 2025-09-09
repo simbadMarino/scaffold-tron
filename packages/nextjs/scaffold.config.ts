@@ -1,10 +1,12 @@
 import * as chains from "viem/chains";
-import { tronMainnet, tronNile, tronShasta } from "~~/utils/scaffold-eth/networks";
+import { tronMainnet, tronNile, tronShasta, tronLocal } from "~~/utils/scaffold-eth/networks";
 
 export type ScaffoldConfig = {
+  ethereumEnabled: boolean;
   targetNetworks: readonly chains.Chain[];
+  tronEnabled: boolean;
   // Add TRON network configuration
-  targetTronNetwork: typeof tronShasta | typeof tronNile | typeof tronMainnet;
+  targetTronNetwork: typeof tronLocal | typeof tronShasta | typeof tronNile | typeof tronMainnet;
   pollingInterval: number;
   alchemyApiKey: string;
   rpcOverrides?: Record<number, string>;
@@ -15,9 +17,11 @@ export type ScaffoldConfig = {
 export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
+  ethereumEnabled: false,
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat],
+  targetNetworks: [chains.tronShasta],
 
+  tronEnabled: true,
   // The TRON network for your DApp
   // Available options:
   // - tronShasta: Shasta testnet (for development)
@@ -27,7 +31,7 @@ const scaffoldConfig = {
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)
-  pollingInterval: 30000,
+  pollingInterval: 50000,
 
   // This is ours Alchemy's default API key.
   // You can get your own at https://dashboard.alchemyapi.io

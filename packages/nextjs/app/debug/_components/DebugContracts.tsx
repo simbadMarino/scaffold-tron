@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { useSessionStorage } from "usehooks-ts";
 import { BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import { ContractUI } from "~~/app/debug/_components/contract";
+import scaffoldConfig from "~~/scaffold.config";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { ContractName, GenericContract } from "~~/utils/scaffold-eth/contract";
 import { useActiveNetworkInfo, useUnifiedContracts } from "~~/utils/scaffold-eth/unifiedContractsData";
@@ -13,7 +14,8 @@ const selectedContractStorageKey = "scaffoldTron.selectedContract";
 export function DebugContracts() {
   const { activeBlockchain, setActiveBlockchain } = useUnifiedWeb3();
   const contractsData = useUnifiedContracts();
-  const { network, blockchain, explorerUrl } = useActiveNetworkInfo();
+  const { network, explorerUrl } = useActiveNetworkInfo();
+  const { ethereumEnabled, tronEnabled } = scaffoldConfig;
 
   const contractNames = useMemo(
     () =>
@@ -39,33 +41,38 @@ export function DebugContracts() {
     setActiveBlockchain(blockchain);
   };
 
+  const showBlockchainSwitcher = ethereumEnabled && tronEnabled;
+
   return (
     <div className="flex flex-col gap-y-6 lg:gap-y-8 py-8 lg:py-12 justify-center items-center">
       {/* Blockchain Switcher */}
       <div className="flex flex-col items-center gap-4 w-full max-w-7xl px-6 lg:px-10">
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-semibold">Debug Contracts on:</h2>
-          <div className="tabs tabs-boxed bg-base-200">
-            <button
-              className={`tab tab-lg ${activeBlockchain === "ethereum" ? "tab-active" : ""}`}
-              onClick={() => handleBlockchainSwitch("ethereum")}
-            >
-              <span className="text-blue-500 mr-2">🔵</span>
-              Ethereum
-            </button>
-            <button
-              className={`tab tab-lg ${activeBlockchain === "tron" ? "tab-active" : ""}`}
-              onClick={() => handleBlockchainSwitch("tron")}
-            >
-              <span className="text-red-500 mr-2">🔴</span>
-              Tron
-            </button>
-          </div>
+          <h2 className="text-xl font-semibold">Debug Contracts{showBlockchainSwitcher ? " on:" : ""}</h2>
+          {showBlockchainSwitcher && (
+            <div className="tabs tabs-boxed bg-base-200">
+              <button
+                className={`tab tab-lg ${activeBlockchain === "ethereum" ? "tab-active" : ""}`}
+                onClick={() => handleBlockchainSwitch("ethereum")}
+              >
+                <span className="text-blue-500 mr-2">🔵</span>
+                Ethereum
+              </button>
+              <button
+                className={`tab tab-lg ${activeBlockchain === "tron" ? "tab-active" : ""}`}
+                onClick={() => handleBlockchainSwitch("tron")}
+              >
+                <span className="text-red-500 mr-2">🔴</span>
+                Tron
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Network Info */}
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <span>Network:</span>
+          <span>Blockchain: {activeBlockchain}</span>
           <span className="font-medium">{network?.name}</span>
           <span>•</span>
           <a href={explorerUrl} target="_blank" rel="noopener noreferrer" className="link link-primary">
@@ -89,11 +96,10 @@ export function DebugContracts() {
             <div className="flex flex-row gap-2 w-full max-w-7xl pb-1 px-6 lg:px-10 flex-wrap">
               {contractNames.map(contractName => (
                 <button
-                  className={`btn btn-secondary btn-sm font-light hover:border-transparent ${
-                    contractName === selectedContract
-                      ? "bg-base-300 hover:bg-base-300 no-animation"
-                      : "bg-base-100 hover:bg-secondary"
-                  }`}
+                  className={`btn btn-secondary btn-sm font-light hover:border-transparent ${contractName === selectedContract
+                    ? "bg-base-300 hover:bg-base-300 no-animation"
+                    : "bg-base-100 hover:bg-secondary"
+                    }`}
                   key={contractName}
                   onClick={() => setSelectedContract(contractName)}
                 >
@@ -113,7 +119,7 @@ export function DebugContracts() {
           {contractNames.map(contractName => (
             <ContractUI
               key={`${activeBlockchain}-${contractName}`}
-              contractName={contractName}
+              contractName={String(contractName)}
               className={contractName === selectedContract ? "" : "hidden"}
             />
           ))}

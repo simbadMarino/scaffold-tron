@@ -6,15 +6,15 @@ import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
 import { Address, Balance } from "~~/components/scaffold-eth";
-import { UnifiedAddress } from "~~/components/scaffold-eth/UnifiedAddress";
-import { UnifiedBalance } from "~~/components/scaffold-eth/UnifiedBalance";
+import { TronAddress } from "~~/components/scaffold-eth/TronAddress";
+import { TronBalance } from "~~/components/scaffold-eth/TronBalance";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useUnifiedDeployedContractInfo } from "~~/hooks/scaffold-eth/useUnifiedDeployedContractInfo";
-import { ContractName } from "~~/utils/scaffold-eth/contract";
+//import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { useActiveNetworkInfo } from "~~/utils/scaffold-eth/unifiedContractsData";
 
 type ContractUIProps = {
-  contractName: ContractName;
+  contractName: string;
   className?: string;
 };
 
@@ -45,6 +45,29 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
     );
   }
 
+  // Render appropriate address and balance components based on blockchain type
+  const renderAddressComponent = () => {
+    if (blockchain === "Tron") {
+      return <TronAddress address={deployedContractData.address} onlyEnsOrAddress contractName={contractName} />;
+    } else {
+      return <Address address={deployedContractData.address} onlyEnsOrAddress />;
+    }
+  };
+
+  const renderBalanceComponent = () => {
+    if (blockchain === "Tron") {
+      return (
+        <TronBalance
+          address={deployedContractData.address}
+          className="px-0 h-1.5 min-h-[0.375rem]"
+          contractName={contractName}
+        />
+      );
+    } else {
+      return <Balance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />;
+    }
+  };
+
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-6 px-6 lg:px-10 lg:gap-12 w-full max-w-7xl my-0 ${className}`}>
       <div className="col-span-5 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
@@ -53,10 +76,10 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
             <div className="flex">
               <div className="flex flex-col gap-1">
                 <span className="font-bold">{contractName}</span>
-                <UnifiedAddress address={deployedContractData.address} onlyEnsOrAddress />
+                {renderAddressComponent()}
                 <div className="flex gap-1 items-center">
                   <span className="font-bold text-sm">Balance:</span>
-                  <UnifiedBalance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />
+                  {renderBalanceComponent()}
                 </div>
               </div>
             </div>

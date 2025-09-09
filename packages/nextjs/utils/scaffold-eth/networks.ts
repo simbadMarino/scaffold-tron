@@ -152,6 +152,22 @@ export function getTargetTronNetwork() {
 }
 
 // Tron Networks
+export const tronLocal = {
+  id: 9999999999,
+  name: "Tron Local Testnet",
+  nativeCurrency: { name: "TRX", symbol: "TRX", decimals: 6 },
+  rpcUrls: {
+    default: { http: ["http://127.0.0.1:9090"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Local Dev",
+      url: "https://shasta.tronscan.org",
+    },
+  },
+  testnet: true,
+} as const;
+
 export const tronShasta = {
   id: 2494104990,
   name: "Tron Shasta Testnet",

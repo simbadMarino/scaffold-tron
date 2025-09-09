@@ -1,3 +1,4 @@
+"use client";
 import { Hash, SendTransactionParameters, TransactionReceipt, WalletClient } from "viem";
 import { Config, useWalletClient } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
