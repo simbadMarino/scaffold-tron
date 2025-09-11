@@ -1,31 +1,10 @@
 {
-  "728126428": {},
   "2494104990": {
-    "SimpleSmartWallet": {
-      "address": "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
-      "addressBase58": "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
-      "network": "shasta",
-      "deployedAt": "2025-08-30T06:49:08.751Z"
-    },
     "TronEnergyPool": {
-      "address": "TU6NBUTQYXPevZnygBjJbbgoohQ3KVDKxR",
-      "addressBase58": "TU6NBUTQYXPevZnygBjJbbgoohQ3KVDKxR",
+      "address": "TJX2hRe7GAr4DTX7WYwUEppPG9H7Dm7khW",
+      "addressBase58": "TJX2hRe7GAr4DTX7WYwUEppPG9H7Dm7khW",
       "network": "shasta",
-      "deployedAt": "2025-09-10T22:25:59.408Z"
-    }
-  },
-  "3448148188": {
-    "Migrations": {
-      "address": "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
-      "addressBase58": "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
-      "network": "nile",
-      "deployedAt": "2025-08-12T18:35:52.350Z"
-    },
-    "SimpleSmartWallet": {
-      "address": "TDRQLtuWT2ULpmzfHzKvFQBNTDWkCbM3d7",
-      "addressBase58": "TDRQLtuWT2ULpmzfHzKvFQBNTDWkCbM3d7",
-      "network": "nile",
-      "deployedAt": "2025-08-24T00:33:05.887Z"
+      "deployedAt": "2025-09-11T01:20:41.532Z"
     }
   }
 }
