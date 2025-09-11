@@ -16,8 +16,91 @@ export type TronContract = {
 
 export type TronContractsDeclaration = Record<number, Record<string, TronContract>>;
 
-// TronCellManager ABI
-const troncellmanagerAbi = [
+// SimpleSmartWallet ABI
+const simplesmartwalletAbi = [
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_hotWallet",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "withdrawAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TransferFailed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_hotWallet",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "withdrawAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TransferSuccess",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_trc20Token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_hotWallet",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_smartWalletBalance",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawToMainWallet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+] as const;
+
+// TronEnergyPool ABI
+const tronenergypoolAbi = [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -152,6 +235,43 @@ const troncellmanagerAbi = [
       }
     ],
     "name": "ExpireUnfreezeWithdrew",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "delegateTo",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "resourceType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "QuickDelegation",
     "type": "event"
   },
   {
@@ -362,7 +482,7 @@ const troncellmanagerAbi = [
   },
   {
     "inputs": [],
-    "name": "ADMIN",
+    "name": "ADMIN_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -388,7 +508,7 @@ const troncellmanagerAbi = [
   },
   {
     "inputs": [],
-    "name": "DELEGATOR",
+    "name": "DELEGATOR_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -500,68 +620,6 @@ const troncellmanagerAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getChainParameters",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "resourceType",
-        "type": "uint8"
-      }
-    ],
-    "name": "getResourceUsage",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -604,78 +662,6 @@ const troncellmanagerAbi = [
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "resourceType",
-        "type": "uint8"
-      }
-    ],
-    "name": "getTotalAcquiredResource",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "resourceType",
-        "type": "uint8"
-      }
-    ],
-    "name": "getTotalDelegatedResource",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "resourceType",
-        "type": "uint8"
-      }
-    ],
-    "name": "getTotalResource",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -981,89 +967,6 @@ const troncellmanagerAbi = [
   }
 ] as const;
 
-// SimpleSmartWallet ABI
-const simplesmartwalletAbi = [
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_hotWallet",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "withdrawAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TransferFailed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_hotWallet",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "withdrawAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TransferSuccess",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_trc20Token",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_hotWallet",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_smartWalletBalance",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawToMainWallet",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-] as const;
-
 // Migrations ABI
 const migrationsAbi = [
   {
@@ -1113,27 +1016,21 @@ const deployedTronContracts = {
   },
   // Shasta Testnet (chainId: 2494104990)
   2494104990: {
-    TronCellManager: {
-      address: "TTGkAPhXbj3uzGrgPH6vH7U3HbRzGqdY1M",
-      addressBase58: "TTGkAPhXbj3uzGrgPH6vH7U3HbRzGqdY1M",
-      abi: troncellmanagerAbi,
-      inheritedFunctions: {},
-    },
     SimpleSmartWallet: {
       address: "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
       addressBase58: "TMmNhdBkdJMVdTLSgH1SfXLVjZSazRAdpv",
       abi: simplesmartwalletAbi,
       inheritedFunctions: {},
     },
+    TronEnergyPool: {
+      address: "TU6NBUTQYXPevZnygBjJbbgoohQ3KVDKxR",
+      addressBase58: "TU6NBUTQYXPevZnygBjJbbgoohQ3KVDKxR",
+      abi: tronenergypoolAbi,
+      inheritedFunctions: {},
+    },
   },
   // Nile Testnet (chainId: 3448148188)
   3448148188: {
-    TronCellManager: {
-      address: "TEY1QiJxXb88U1HsUVr5NdhioRCR6ssc4j",
-      addressBase58: "TEY1QiJxXb88U1HsUVr5NdhioRCR6ssc4j",
-      abi: troncellmanagerAbi,
-      inheritedFunctions: {},
-    },
     Migrations: {
       address: "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
       addressBase58: "TS5kNcQdwfU5zVCG54vykwQvR8rVjEzL7h",
