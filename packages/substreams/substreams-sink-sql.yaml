@@ -1,0 +1,55 @@
+specVersion: v0.1.0
+kind: substreams-sink-sql
+metadata:
+    name: tron-transactions-sink
+    version: v1.0.0
+
+sink:
+    module: filtered_transactions
+    type: sf.substreams.tron.v1.Transactions
+    config:
+        schema: "./schema.sql"
+        engine: postgresql
+        postgraphile: true
+        postgraphile_frontend: true
+        postgraphile_config:
+            cors: true
+            watch: true
+            enhance_graphql_schema: true
+            jwt_secret: "your-jwt-secret-here"
+            default_role: "anonymous"
+
+network: tron
+
+# Database connection will be configured via environment variables:
+# DATABASE_URL=postgresql://username:password@localhost:5432/tron_transactions
+
+# SQL transformations for the transaction data
+transforms:
+    - name: tron_transactions
+      sql: |
+          INSERT INTO tron_transactions (
+            transaction_hash,
+            block_number,
+            block_timestamp,
+            contract_type,
+            contract_address,
+            from_address,
+            to_address,
+            value,
+            fee,
+            result,
+            raw_data
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+          ) ON CONFLICT (transaction_hash) DO UPDATE SET
+            block_number = EXCLUDED.block_number,
+            block_timestamp = EXCLUDED.block_timestamp,
+            contract_type = EXCLUDED.contract_type,
+            contract_address = EXCLUDED.contract_address,
+            from_address = EXCLUDED.from_address,
+            to_address = EXCLUDED.to_address,
+            value = EXCLUDED.value,
+            fee = EXCLUDED.fee,
+            result = EXCLUDED.result,
+            raw_data = EXCLUDED.raw_data;

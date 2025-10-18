@@ -1,0 +1,48 @@
+{
+  "name": "@se-2/tronbox",
+  "version": "0.0.1",
+  "scripts": {
+    "tron:compile": "tronbox compile",
+    "tron:deploy:shasta": "node scripts/deployTronContract.js shasta",
+    "tron:deploy:nile": "node scripts/deployTronContract.js nile",
+    "tron:deploy:testnet": "node scripts/deployTronContract.js shasta",
+    "tron:deploy:mainnet": "node scripts/deployTronContract.js mainnet",
+    "tron:deploy:dev": "node scripts/deployTronContract.js dev",
+    "tron:test": "node scripts/testTronWeb.js",
+    "tron:console": "tronbox console",
+    "tron:generate": "node scripts/generateTronContractsTs.js",
+    "tron:add-deployment": "node scripts/generateTronContractsTs.js add",
+    "tron:setup": "node scripts/generateTronAccount.js",
+    "tron:account": "node scripts/listTronAccount.js",
+    "tron:balance": "node scripts/checkTronBalance.js"
+  },
+  "dependencies": {
+    "@inquirer/password": "^4.0.2",
+    "@openzeppelin/contracts": "~5.0.2",
+    "dotenv": "~16.4.5",
+    "envfile": "~7.1.0",
+    "qrcode": "~1.5.4"
+  },
+  "devDependencies": {
+    "@ethersproject/abi": "~5.7.0",
+    "@ethersproject/providers": "~5.7.2",
+    "@types/eslint": "~9.6.1",
+    "@types/mocha": "~10.0.10",
+    "@types/prettier": "~3.0.0",
+    "@types/qrcode": "~1.5.5",
+    "@typescript-eslint/eslint-plugin": "~8.27.0",
+    "@typescript-eslint/parser": "~8.27.0",
+    "chai": "~4.5.0",
+    "eslint": "~9.23.0",
+    "eslint-config-prettier": "~10.1.1",
+    "eslint-plugin-prettier": "~5.2.4",
+    "prettier": "^3.5.3",
+    "prettier-plugin-solidity": "~1.4.1",
+    "solidity-coverage": "~0.8.13",
+    "tronbox": "~4.2.0",
+    "tronweb": "~6.0.4",
+    "ts-node": "~10.9.1",
+    "typechain": "~8.3.2",
+    "typescript": "^5.8.2"
+  }
+}

@@ -1,0 +1,31 @@
+# Rust build artifacts
+/target/
+
+
+# Logs
+*.log
+replay.log
+
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and editor files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment files
+.env
+.env.local
+
+# Temporary files
+tmp/
+temp/ 
