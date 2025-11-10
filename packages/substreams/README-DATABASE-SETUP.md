@@ -48,7 +48,7 @@ docker-compose up -d
 
 This will:
 
-- Start PostgreSQL on port 5432
+- Start PostgreSQL on port 5437
 - Start PostGraphile GraphQL server on port 5000
 - Create the database schema automatically
 - Enable GraphQL endpoint at `http://localhost:5000/graphql`
@@ -134,7 +134,7 @@ The frontend will be available at `http://localhost:3000`
 The default connection settings are:
 
 ```env
-DATABASE_URL=postgresql://tron_user:tron_password@localhost:5432/tron_transactions
+DATABASE_URL=postgresql://tron_user:tron_password@localhost:5437/tron_transactions
 ```
 
 To use a different database, update the `docker-compose.yml` file or set the `DATABASE_URL` environment variable.

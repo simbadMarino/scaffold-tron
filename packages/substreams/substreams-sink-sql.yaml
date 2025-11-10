@@ -22,7 +22,7 @@ sink:
 network: tron
 
 # Database connection will be configured via environment variables:
-# DATABASE_URL=postgresql://username:password@localhost:5432/tron_transactions
+# DATABASE_URL=postgresql://username:password@localhost:5437/tron_transactions
 
 # SQL transformations for the transaction data
 transforms:

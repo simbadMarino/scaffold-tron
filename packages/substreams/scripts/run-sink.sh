@@ -22,7 +22,7 @@ SUBSTREAMS_API_TOKEN=${SUBSTREAMS_API_TOKEN:-""}
 CONTRACT_ADDRESS=${CONTRACT_ADDRESS:-""}
 START_BLOCK=${START_BLOCK:-"0"}
 STOP_BLOCK=${STOP_BLOCK:-""}
-DATABASE_URL=${DATABASE_URL:-"postgresql://tron_user:tron_password@localhost:5432/tron_transactions"}
+DATABASE_URL=${DATABASE_URL:-"postgresql://tron_user:tron_password@localhost:5437/tron_transactions"}
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do

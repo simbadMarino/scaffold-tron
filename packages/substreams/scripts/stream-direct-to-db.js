@@ -54,7 +54,7 @@ function base58Encode(buffer) {
 // Database configuration
 const dbConfig = {
     host: "localhost",
-    port: 5432,
+    port: 5437,
     database: "tron_transactions",
     user: "tron_user",
     password: "tron_password",

@@ -1,7 +1,7 @@
 type: substreams-sink-sql
 config:
     engine: postgresql
-    dsn: "postgresql://tron_user:tron_password@localhost:5432/tron_transactions"
+    dsn: "postgresql://tron_user:tron_password@localhost:5437/tron_transactions"
     schema: "./schema.sql"
 
 # Transform the substreams data into database inserts
