@@ -1012,6 +1012,28 @@ This will:
 📦 Blocks processed: 55000100 - 55000115
 ```
 
+### **Filtered Streaming Commands (USDT examples)**
+
+**What these do (at a high level):** These commands run Substreams pipelines against TRON endpoints with filters for specific contracts and addresses. The JSONL output is piped into Node.js scripts that parse the stream and **store rows into PostgreSQL tables**. The first command writes **debits** to `filtered_usdt_transactions` (filtered by `contract_type`, the USDT contract address, and a specific `from` address). The second command listens on the TRON EVM endpoint for the USDT **Transfer** event signature and writes **credits** to `filtered_usdt_to` for a given `to` address.
+
+**Example Command for “from” — stream filtered data into `filtered_usdt_transactions` table:**
+
+```bash
+substreams run ./bin/tron-foundational-v0.1.2.spkg filtered_transactions \
+  -e mainnet.tron.streamingfast.io:443 \
+  -s -1 \
+  -p 'filtered_transactions=contract_type:TriggerSmartContract && contract_address:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t && from:TLj5jNLzaoR94c5WUH9uxpQAY3RZT6gh2y' \
+  -o jsonl \
+| node --max-old-space-size=8192 --expose-gc scripts/store-filtered-to-table.js
+```
+
+**Example Command for “to” — stream filtered data into `filtered_usdt_to` table:**
+
+```bash
+substreams run -e mainnet-evm.tron.streamingfast.io:443   ethereum-common@v0.3.3 filtered_events   -s -1   -p 'filtered_events=evt_addr:0xa614f803b6fd780986a42c78ec9c7f77e6ded13c && evt_sig:0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'   -o jsonl | node --max-old-space-size=8192 --expose-gc scripts/store-filtered-to-table-credit.js TDqSquXBgUCLYvYC4XZgrprLK589dkhSCf
+```
+
+
 ### **🔍 Step 5: Query Data via GraphQL**
 
 #### **Test GraphQL API**
@@ -1249,7 +1271,7 @@ export SUBSTREAMS_API_TOKEN="your-token"
 export POSTGRES_USER="tron_user"
 export POSTGRES_PASSWORD="secure_password"
 export POSTGRES_DB="tron_transactions"
-export POSTGRES_PORT="5432"
+export POSTGRES_PORT="5437"
 
 # API configuration
 export GRAPHQL_PORT="5001"

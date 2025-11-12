@@ -4,7 +4,7 @@
 -- Create the main transactions table
 CREATE TABLE IF NOT EXISTS tron_transactions (
     id SERIAL PRIMARY KEY,
-    transaction_hash VARCHAR(64) NOT NULL UNIQUE,
+    transaction_hash VARCHAR(120) NOT NULL UNIQUE,
     block_number BIGINT NOT NULL,
     block_timestamp TIMESTAMP NOT NULL,
     contract_type VARCHAR(50) NOT NULL,
@@ -45,7 +45,7 @@ CREATE OR REPLACE FUNCTION get_transactions_by_contract(
     limit_count INTEGER DEFAULT 100,
     offset_count INTEGER DEFAULT 0
 ) RETURNS TABLE (
-    transaction_hash VARCHAR(64),
+    transaction_hash VARCHAR(120),
     block_number BIGINT,
     block_timestamp TIMESTAMP,
     contract_type VARCHAR(50),
@@ -78,3 +78,45 @@ ALTER TABLE tron_transactions ENABLE ROW LEVEL SECURITY;
 
 -- Create a policy for public read access (adjust as needed)
 CREATE POLICY "Public read access" ON tron_transactions FOR SELECT USING (true); 
+
+-- Create the filtered_usdt_transactions table
+CREATE TABLE IF NOT EXISTS filtered_usdt_transactions (
+  id                BIGSERIAL PRIMARY KEY,
+
+  -- Provenance
+  module_name       VARCHAR(120) NOT NULL,        -- e.g., 'filtered_transactions'
+  block_id          CHAR(120)     NOT NULL,       -- hex block ID (64)
+  block_number      BIGINT       NOT NULL,
+  block_timestamp   TIMESTAMPTZ  NOT NULL,
+
+  -- TX basics
+  tx_hash           CHAR(120)     NOT NULL,       -- TRON tx hash (64 hex)
+  contract_type     VARCHAR(32)  NOT NULL,       -- e.g., 'TriggerSmartContract'
+  contract_address  VARCHAR(120)  NOT NULL,       -- TRON Base58 (~34), allow a bit of slack
+  from_address      VARCHAR(120),                 -- TRON Base58
+  to_address        VARCHAR(120),                 -- TRON Base58
+
+  -- Values (store as integers; USDT has 6 decimals at interpretation time)
+  amount            NUMERIC(38,0) DEFAULT 0,     -- raw integer (no decimals)
+  fee               NUMERIC(38,0) DEFAULT 0,     -- raw integer (sun)
+
+  -- Result + full audit payload
+  result            VARCHAR(32)   DEFAULT 'SUCCESS',
+  raw_data          JSONB         NOT NULL,
+
+  CONSTRAINT uq_filtered_tx UNIQUE (tx_hash)
+);
+
+-- Helpful indexes
+CREATE INDEX IF NOT EXISTS idx_fusdt_block_number     ON filtered_usdt_transactions (block_number);
+CREATE INDEX IF NOT EXISTS idx_fusdt_contract_address ON filtered_usdt_transactions (contract_address);
+CREATE INDEX IF NOT EXISTS idx_fusdt_to_address       ON filtered_usdt_transactions (to_address);
+CREATE INDEX IF NOT EXISTS idx_fusdt_from_address     ON filtered_usdt_transactions (from_address);
+
+-- Store only the essentials for USDT credits (to-address side)
+CREATE TABLE IF NOT EXISTS filtered_usdt_to (
+  tx_hash      CHAR(120)    PRIMARY KEY,
+  from_address VARCHAR(120),
+  to_address   VARCHAR(120) NOT NULL,
+  amount       NUMERIC(38,0) NOT NULL
+);

@@ -13,7 +13,7 @@
     },
     "initializeCommand": "mkdir -p ${localWorkspaceFolder}/.graph-node",
     "forwardPorts": [
-        5432,
+        5437,
         5001,
         8000,
         8020,
@@ -28,7 +28,7 @@
             "label": "substreams_pprof",
             "onAutoForward": "silent"
         },
-        "5432": {
+        "5437": {
             "label": "postgresql",
         },
         "5001": {

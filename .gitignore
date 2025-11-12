@@ -8,6 +8,8 @@ node_modules
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+yarn.lock
+.yarn/releases/yarn-3.2.3.cjs
 
 # eslint
 .eslintcache
@@ -30,3 +32,9 @@ dist
 ##tronbox framework
 /packages/tronbox/build/*
 /packages/tronbox/contracts/*
+
+.env
+/packages/substreams/bin/*
+/scaffold-tron/.yarn/releases/*
+
+

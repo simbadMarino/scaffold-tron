@@ -8,7 +8,7 @@ services:
             POSTGRES_USER: tron_user
             POSTGRES_PASSWORD: tron_password
         ports:
-            - "5432:5432"
+            - "5437:5432"
         volumes:
             - postgres_data:/var/lib/postgresql/data
             - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
@@ -24,13 +24,13 @@ services:
             postgres:
                 condition: service_healthy
         environment:
-            DATABASE_URL: postgres://tron_user:tron_password@postgres:5432/tron_transactions
+            DATABASE_URL: postgres://tron_user:tron_password@postgres:5437/tron_transactions
         ports:
             - "5001:5000"
         command:
             [
                 "--connection",
-                "postgres://tron_user:tron_password@postgres:5432/tron_transactions",
+                "postgres://tron_user:tron_password@postgres:5437/tron_transactions",
                 "--port",
                 "5000",
                 "--schema",
