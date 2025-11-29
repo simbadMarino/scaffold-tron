@@ -19,8 +19,7 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useTron } from "~~/services/web3/tronConfig";
 import { useUnifiedWeb3 } from "~~/services/web3/unifiedWeb3Context";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
-import { ContractName } from "~~/utils/scaffold-eth/contract";
-
+//import { ContractName } from "~~/utils/scaffold-eth/contract";
 type ReadOnlyFunctionFormProps = {
   contractAddress: Address;
   abiFunction: AbiFunction;
@@ -28,6 +27,45 @@ type ReadOnlyFunctionFormProps = {
   abi: Abi;
 };
 
+
+/**
+ * Simple base58 encode function
+ */
+
+const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+function base58Encode(bytes: any) {
+  if (bytes.length === 0) return "";
+
+  let digits = [0];
+
+  for (let i = 0; i < bytes.length; i++) {
+    let carry = bytes[i];
+    for (let j = 0; j < digits.length; j++) {
+      carry += digits[j] << 8;
+      digits[j] = carry % 58;
+      carry = Math.floor(carry / 58);
+    }
+
+    while (carry > 0) {
+      digits.push(carry % 58);
+      carry = Math.floor(carry / 58);
+    }
+  }
+
+  // Handle leading zeros
+  let leadingZeros = 0;
+  for (let i = 0; i < bytes.length && bytes[i] === 0; i++) {
+    leadingZeros++;
+  }
+
+  let result = BASE58_ALPHABET[0].repeat(leadingZeros);
+  for (let i = digits.length - 1; i >= 0; i--) {
+    result += BASE58_ALPHABET[digits[i]];
+  }
+
+  return result;
+}
 export const ReadOnlyFunctionForm = ({
   contractAddress,
   abiFunction,
@@ -110,25 +148,14 @@ export const ReadOnlyFunctionForm = ({
                 setIsManualLoading(true);
                 if (tronWeb && contractAddress) {
                   const tronContracts = (deployedTronContracts as any)[tronNetwork?.id || 0];
-
-                  // Find the contract address from deployed contracts
-                  let tronAddress = contractAddress;
-                  if (tronContracts) {
-                    for (const [_, contractData] of Object.entries(tronContracts)) {
-                      if ((contractData as any).address) {
-                        tronAddress =
-                          (contractData as any).addressBase58 || (contractData as any).address;
-                        break;
-                      }
-                    }
-                  }
-
-                  if (!tronAddress) {
+                  console.log("Netowrk ID:", tronNetwork.id);
+                  console.log("Contracts array: ", tronContracts);
+                  console.log("Current Selected contract:", contractAddress);
+                  if (!contractAddress) {
                     throw new Error("Tron contract address not found");
                   }
-
-                  console.log("Using Tron contract address:", tronAddress);
-                  const contract = await tronWeb.contract().at(tronAddress);
+                  console.log("Using Tron contract address:", contractAddress);
+                  const contract = await tronWeb.contract().at(contractAddress);
                   const args = getParsedContractFunctionArgs(form);
                   const data = await contract[abiFunction.name](...args).call();
                   setResult(data);
@@ -147,6 +174,6 @@ export const ReadOnlyFunctionForm = ({
           Read 📡
         </button>
       </div>
-    </div>
+    </div >
   );
 };
