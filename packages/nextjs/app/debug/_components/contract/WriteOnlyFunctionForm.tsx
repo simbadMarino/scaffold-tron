@@ -93,28 +93,29 @@ export const WriteOnlyFunctionForm = ({
           }
 
           // Get the actual Tron address from deployedTronContracts
-          const tronContracts = (deployedTronContracts as any)[tronNetwork?.id || 0];
-
-          // Find the contract name by searching for the address (though this is a bit hacky)
-          let tronAddress = contractAddress;
-          if (tronContracts) {
-            for (const [contractName, contractData] of Object.entries(tronContracts)) {
-              if ((contractData as any).address) {
-                tronAddress = (contractData as any).address;
-                break;
-              }
-            }
-          }
-
-          if (!tronAddress) {
-            throw new Error("Tron contract address not found");
-          }
-
-          console.log("Using Tron contract address for write:", tronAddress);
+          /* const tronContracts = (deployedTronContracts as any)[tronNetwork?.id || 0];
+ 
+           // Find the contract name by searching for the address (though this is a bit hacky)
+           let tronAddress = contractAddress;
+           if (tronContracts) {
+             for (const [contractName, contractData] of Object.entries(tronContracts)) {
+               if ((contractData as any).address) {
+                 tronAddress = (contractData as any).address;
+                 break;
+               }
+             }
+           }
+ 
+           if (!tronAddress) {
+             throw new Error("Tron contract address not found");
+           }
+           */
+          console.log("Netowrk ID:", tronNetwork.id);
+          console.log("Using Tron contract address for write:", contractAddress);
           console.log("User address:", account.address);
           console.log("Wallet TronWeb default address:", walletTronWeb.defaultAddress);
 
-          const contract = await walletTronWeb.contract(abi, tronAddress);
+          const contract = await walletTronWeb.contract(abi, contractAddress);
           const args = getParsedContractFunctionArgs(form);
 
           const options: any = {
